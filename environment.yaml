@@ -1,0 +1,13 @@
+name: comp3821
+
+channels:
+  - conda-forge
+
+dependencies:
+  - python=3.13
+  - numpy
+  - pandas
+  - matplotlib
+  - networkx
+  - jupyterlab
+  - pytest
