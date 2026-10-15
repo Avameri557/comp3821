@@ -3,6 +3,9 @@ __pycache__/
 *.pyc
 *.pyo
 
+# Testing and coverage
+.pytest_cache/
+
 # IDE and editor settings
 .vscode/
 .idea/
