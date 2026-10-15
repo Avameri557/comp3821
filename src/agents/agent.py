@@ -35,8 +35,8 @@ class InformationModel:
     def get_perceived_costs(self, network):
         if self.alpha == 1.0:
             return {
-                (u, v): data["cost"]
-                for u, v, data in network.edges(data=True)
+                (u, v): data["edge"].cost()
+                for u, v, data in network.graph.edges(data=True)
             }
 
         raise NotImplementedError(
