@@ -1,0 +1,22 @@
+{
+  "agents": [
+    {
+      "id": 0,
+      "origin": 1,
+      "destination": 4,
+      "alpha": 1
+    },
+    {
+      "id": 1,
+      "origin": 1,
+      "destination": 4,
+      "alpha": 0.5
+    },
+    {
+      "id": 2,
+      "origin": 1,
+      "destination": 4,
+      "alpha": 0
+    }
+  ]
+}
