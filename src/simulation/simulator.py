@@ -1,8 +1,8 @@
 from collections import Counter
 
-from src.agents.agent import Agent, InformationModel
-from src.networks.network import Network
-from src.agents.routing_strategies import SelfishRouting
+from components.agent import Agent, InformationModel
+from components.network import Network
+from components.routing_strategies import SelfishRouting
 
 
 class Simulation:

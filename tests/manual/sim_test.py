@@ -1,5 +1,5 @@
-from src.agents.agent import Agent
-from src.networks.network import Network
+from components.agent import Agent
+from components.network import Network
 from src.simulation.simulator import Simulation, display_step
 
 

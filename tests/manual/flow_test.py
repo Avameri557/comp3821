@@ -1,4 +1,4 @@
-from src.networks.network import Network
+from components.network import Network
 
 network = Network()
 
