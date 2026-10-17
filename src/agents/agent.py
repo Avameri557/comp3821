@@ -15,30 +15,34 @@ class Agent:
     def __post_init__(self):
         if not 0 <= self.alpha <= 1:
             raise ValueError("alpha must be between 0 and 1")
-
         self.current_node = self.origin
         self.route_history = [self.origin]
+        self.arrived = self.origin == self.destination
 
     def move(self, next_node: int, cost: float):
         self.current_node = next_node
         self.route_history.append(next_node)
         self.total_cost += cost
-
         if self.current_node == self.destination:
             self.arrived = True
 
 
 class InformationModel:
+    """Deterministic information proxy: alpha blends free-flow and observed costs.
+
+    alpha=0: agents see only free-flow edge costs.
+    alpha=1: agents see current congestion costs.
+    Intermediate values interpolate. This is an experimental assumption,
+    not a probabilistic information model.
+    """
     def __init__(self, alpha=1.0):
+        if not 0 <= alpha <= 1:
+            raise ValueError("alpha must be between 0 and 1")
         self.alpha = alpha
 
     def get_perceived_costs(self, network):
-        if self.alpha == 1.0:
-            return {
-                (u, v): data["edge"].cost()
-                for u, v, data in network.graph.edges(data=True)
-            }
-
-        raise NotImplementedError(
-            "Partial information is not implemented yet"
-        )
+        return {
+            (u, v): (1 - self.alpha) * data["edge"].cost(flow=0)
+                    + self.alpha * data["edge"].cost()
+            for u, v, data in network.graph.edges(data=True)
+        }
