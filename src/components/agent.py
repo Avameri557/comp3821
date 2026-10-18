@@ -36,8 +36,9 @@ class InformationModel:
         self.alpha = alpha
 
     def get_perceived_costs(self, network):
+        # To be updated with better information function
         return {
-            (u, v): (1 - self.alpha) * data["edge"].cost(flow=0)
+            (u, v): data["edge"].cost(flow=0)
                     + self.alpha * data["edge"].cost()
             for u, v, data in network.graph.edges(data=True)
         }
