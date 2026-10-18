@@ -1,7 +1,7 @@
 import pytest
 import networkx as nx
 
-from src.networks.network import Network, Edge
+from objects.network import Network, Edge
 
 def test_edge_cost():
     edge = Edge(1, 2, a=5, b=2)

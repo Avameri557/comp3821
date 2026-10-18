@@ -1,0 +1,124 @@
+[
+  {
+    "timestep": 0,
+    "previous_flows": [
+      {
+        "source": 1,
+        "target": 2,
+        "flow": 0.0
+      },
+      {
+        "source": 1,
+        "target": 3,
+        "flow": 0.0
+      },
+      {
+        "source": 2,
+        "target": 4,
+        "flow": 0.0
+      },
+      {
+        "source": 3,
+        "target": 4,
+        "flow": 0.0
+      }
+    ],
+    "decisions": [
+      {
+        "agent_id": 0,
+        "source": 1,
+        "target": 2,
+        "perceived_cost": 2.0,
+        "actual_cost": 5
+      },
+      {
+        "agent_id": 1,
+        "source": 1,
+        "target": 2,
+        "perceived_cost": 2.0,
+        "actual_cost": 5
+      },
+      {
+        "agent_id": 2,
+        "source": 1,
+        "target": 2,
+        "perceived_cost": 2.0,
+        "actual_cost": 5
+      }
+    ],
+    "new_flows": [
+      {
+        "source": 1,
+        "target": 2,
+        "flow": 3
+      }
+    ],
+    "positions": {
+      "0": 2,
+      "1": 2,
+      "2": 2
+    },
+    "total_cost": 15.0
+  },
+  {
+    "timestep": 1,
+    "previous_flows": [
+      {
+        "source": 1,
+        "target": 2,
+        "flow": 3
+      },
+      {
+        "source": 1,
+        "target": 3,
+        "flow": 0
+      },
+      {
+        "source": 2,
+        "target": 4,
+        "flow": 0
+      },
+      {
+        "source": 3,
+        "target": 4,
+        "flow": 0
+      }
+    ],
+    "decisions": [
+      {
+        "agent_id": 0,
+        "source": 2,
+        "target": 4,
+        "perceived_cost": 2,
+        "actual_cost": 5
+      },
+      {
+        "agent_id": 1,
+        "source": 2,
+        "target": 4,
+        "perceived_cost": 2.0,
+        "actual_cost": 5
+      },
+      {
+        "agent_id": 2,
+        "source": 2,
+        "target": 4,
+        "perceived_cost": 2,
+        "actual_cost": 5
+      }
+    ],
+    "new_flows": [
+      {
+        "source": 2,
+        "target": 4,
+        "flow": 3
+      }
+    ],
+    "positions": {
+      "0": 4,
+      "1": 4,
+      "2": 4
+    },
+    "total_cost": 30.0
+  }
+]

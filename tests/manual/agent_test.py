@@ -1,6 +1,6 @@
 import networkx as nx
-from src.agents.agent import Agent, InformationModel
-from src.agents.routing_strategies import SelfishRouting
+from components.agent import Agent, InformationModel
+from components.routing_strategies import SelfishRouting
 
 # Small test network
 network = nx.DiGraph()

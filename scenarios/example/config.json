@@ -1,0 +1,5 @@
+{
+  "max_timesteps": 100,
+  "record_history": true,
+  "output_directory": "results/example"
+}
