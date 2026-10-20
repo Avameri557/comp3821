@@ -8,7 +8,7 @@ from src.simulation.scenario_loader import load_scenario
 def serializable_snapshot(snapshot):
     """JSON does not support tuple-key dictionaries."""
     result = dict(snapshot)
-    for key in ("previous_flows", "new_flows"):
+    for key in ("previous_flows", "initial_flows", "new_flows"):
         result[key] = [
             {"source": u, "target": v, "flow": flow}
             for (u, v), flow in snapshot[key].items()
