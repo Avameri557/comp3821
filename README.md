@@ -7,4 +7,7 @@ Please make a new branch for any new features, ideally with the naming conventio
 # Network Loading Guide
 
 ## Simulation v1
-Import agents, networks and configuration JSONs according to the example template. Run `python -m src.simulation.runner --scenario scenarios/<scenario-name>` in the root directory to run each scenario. A directory of the same name will be generated summarising the sim history and results.
+Import agents, networks and configuration JSONs according to the example template. 
+
+To run simulation, run: 
+`python -m src.simulation.runner --scenario scenarios/<scenario-name> --output results/<scenario-name>`

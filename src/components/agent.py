@@ -1,4 +1,5 @@
 from dataclasses import dataclass, field
+import random
 
 @dataclass
 class Agent:
@@ -30,15 +31,25 @@ class Agent:
 
 
 class InformationModel:
-    def __init__(self, alpha=1.0):
+    def __init__(self, alpha=1.0, rng=None):
         if not 0 <= alpha <= 1:
             raise ValueError("alpha must be between 0 and 1")
         self.alpha = alpha
+        self.rng = rng if rng is not None else random.Random()
 
-    def get_perceived_costs(self, network):
-        # To be updated with better information function
+    def get_perceived_costs(self, network, intentions=None, agent=None):
+        intentions = intentions or []
+        observed = {}
+        for intention in intentions:
+            if agent is not None and intention["agent"].agent_id == agent.agent_id:
+                continue
+            edge = (intention["source"], intention["target"])
+            if self.rng.random() < self.alpha:
+                observed[edge] = observed.get(edge, 0) + 1
+
         return {
-            (u, v): data["edge"].cost(flow=0)
-                    + self.alpha * data["edge"].cost()
+                (u, v): data["edge"].cost(
+                flow=(observed.get((u, v), 0) / self.alpha if self.alpha else 0)
+            )
             for u, v, data in network.graph.edges(data=True)
         }

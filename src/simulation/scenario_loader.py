@@ -37,5 +37,13 @@ def load_scenario(directory):
     max_steps = config.get("max_timesteps", 10000)
     if not isinstance(max_steps, int) or isinstance(max_steps, bool) or max_steps < 0:
         raise ValueError("max_timesteps must be a nonnegative integer")
-    simulation = Simulation(network, agents, record_history=config.get("record_history", False))
+    
+    seed = config.get("seed")
+    if seed is not None and (not isinstance(seed, int) or isinstance(seed, bool)):
+        raise ValueError("seed must be an integer")
+    simulation = Simulation(
+        network, agents,
+        record_history=config.get("record_history", False),
+        seed=seed,
+    )
     return simulation, config
