@@ -1,4 +1,5 @@
 from collections import Counter
+import random
 
 import networkx as nx
 
@@ -8,13 +9,14 @@ from src.components.routing_strategies import SelfishRouting
 
 
 class Simulation:
-    def __init__(self, network, agents, record_history=True):
+    def __init__(self, network, agents, record_history=True, seed=None):
         self.network = network
         self.agents = agents
         self.routing = SelfishRouting()
         self.timestep = 0
         self.record_history = record_history
         self.history = []
+        self.rng = random.Random(seed)
         self._validate()
 
     def _validate(self):
@@ -33,26 +35,68 @@ class Simulation:
     def step(self):
         if self.all_agents_arrived():
             return None
+
         previous_flows = {
             (u, v): data["edge"].flow
             for u, v, data in self.network.graph.edges(data=True)
         }
-        decisions = []
+
+        # Phase 1: all agents choose using the same free-flow snapshot.
+        # No provisional choices are committed or exposed during this phase.
+        free_flow_costs = {
+            (u, v): data["edge"].cost(flow=0)
+            for u, v, data in self.network.graph.edges(data=True)
+        }
+        intentions = []
         for agent in self.agents:
             if agent.arrived:
                 continue
-            perceived_costs = InformationModel(agent.alpha).get_perceived_costs(self.network)
             next_node = self.routing.choose_next_node(
-                agent, self.network.graph, perceived_costs
+                agent, self.network.graph, free_flow_costs
+            )
+            if next_node is not None:
+                intentions.append({
+                    "agent": agent,
+                    "source": agent.current_node,
+                    "target": next_node,
+                })
+
+        # Phase 2: sample the *frozen* provisional intentions. Every agent
+        # revises once; revisions are not revealed until all have decided.
+        decisions = []
+        for intention in intentions:
+            agent = intention["agent"]
+            perceived_costs = InformationModel(
+                agent.alpha, rng=self.rng
+            ).get_perceived_costs(self.network, intentions, agent=agent)
+
+            # Include the agent's own possible entry on the first edge.
+            # The common free-flow remainder is unchanged, so no other
+            # edge receives a fictitious contribution from this agent.
+            candidate_costs = dict(perceived_costs)
+            for _, target in self.network.graph.out_edges(agent.current_node):
+                edge = self.network.get_edge(agent.current_node, target)
+                estimated_others = (
+                    (perceived_costs[(agent.current_node, target)] - edge.a) / edge.b
+                    if edge.b > 0 else 0
+                )
+                candidate_costs[(agent.current_node, target)] = edge.cost(
+                    flow=estimated_others + 1
+                )
+
+            next_node = self.routing.choose_next_node(
+                agent, self.network.graph, candidate_costs
             )
             if next_node is not None:
                 decisions.append({
                     "agent": agent,
                     "source": agent.current_node,
                     "target": next_node,
-                    "perceived_cost": perceived_costs[(agent.current_node, next_node)]
+                    "initial_target": intention["target"],
+                    "perceived_cost": candidate_costs[(agent.current_node, next_node)],
                 })
 
+        # Phase 3: commit all final choices simultaneously.
         new_flows = Counter((d["source"], d["target"]) for d in decisions)
         for u, v, data in self.network.graph.edges(data=True):
             data["edge"].flow = new_flows[(u, v)]
@@ -67,17 +111,22 @@ class Simulation:
                 "agent_id": agent.agent_id,
                 "source": source,
                 "target": target,
+                "initial_target": decision["initial_target"],
+                "reassessed": target != decision["initial_target"],
                 "perceived_cost": decision["perceived_cost"],
-                "actual_cost": actual_cost
+                "actual_cost": actual_cost,
             })
 
         snapshot = {
             "timestep": self.timestep,
             "previous_flows": previous_flows,
+            "initial_flows": dict(Counter(
+                (d["source"], d["target"]) for d in intentions
+            )),
             "decisions": decision_log,
             "new_flows": dict(new_flows),
             "positions": {agent.agent_id: agent.current_node for agent in self.agents},
-            "total_cost": sum(agent.total_cost for agent in self.agents)
+            "total_cost": sum(agent.total_cost for agent in self.agents),
         }
         if self.record_history:
             self.history.append(snapshot)
@@ -92,7 +141,6 @@ class Simulation:
             yield self.step()
 
     def run_until_complete(self, max_steps=10000):
-        """Execute headlessly; distinguish completed and timed-out runs."""
         if max_steps < 0:
             raise ValueError("max_steps must be nonnegative")
         for _ in self.run(max_steps=max_steps):
@@ -118,19 +166,21 @@ class Simulation:
                     "alpha": agent.alpha,
                     "arrived": agent.arrived,
                     "route": agent.route_history,
-                    "cost": agent.total_cost
+                    "cost": agent.total_cost,
                 }
                 for agent in self.agents
-            ]
+            ],
         }
 
 
 def display_step(snapshot):
     print(f"\n--- Timestep {snapshot['timestep']} ---")
     print("Previous congestion:", snapshot["previous_flows"])
+    print("Initial intentions:", snapshot["initial_flows"])
     for d in snapshot["decisions"]:
         print(
-            f"Agent {d['agent_id']}: {d['source']} -> {d['target']} | "
+            f"Agent {d['agent_id']}: {d['source']} -> {d['target']} "
+            f"(initially {d['initial_target']}) | "
             f"Perceived: {d['perceived_cost']:.2f} | Actual: {d['actual_cost']:.2f}"
         )
     print("Updated congestion:", snapshot["new_flows"])
