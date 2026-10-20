@@ -1,0 +1,630 @@
+[
+  {
+    "timestep": 0,
+    "previous_flows": [
+      {
+        "source": 1,
+        "target": 2,
+        "flow": 0.0
+      },
+      {
+        "source": 1,
+        "target": 3,
+        "flow": 0.0
+      },
+      {
+        "source": 2,
+        "target": 4,
+        "flow": 0.0
+      },
+      {
+        "source": 3,
+        "target": 4,
+        "flow": 0.0
+      }
+    ],
+    "initial_flows": [
+      {
+        "source": 1,
+        "target": 2,
+        "flow": 30
+      }
+    ],
+    "decisions": [
+      {
+        "agent_id": 0,
+        "source": 1,
+        "initial_target": 2,
+        "reassessed": true,
+        "perceived_cost": 3.2,
+        "actual_cost": 9.0
+      },
+      {
+        "agent_id": 1,
+        "source": 1,
+        "initial_target": 2,
+        "reassessed": true,
+        "perceived_cost": 3.2,
+        "actual_cost": 9.0
+      },
+      {
+        "agent_id": 2,
+        "source": 1,
+        "initial_target": 2,
+        "reassessed": true,
+        "perceived_cost": 3.2,
+        "actual_cost": 9.0
+      },
+      {
+        "agent_id": 3,
+        "source": 1,
+        "initial_target": 2,
+        "reassessed": true,
+        "perceived_cost": 3.2,
+        "actual_cost": 9.0
+      },
+      {
+        "agent_id": 4,
+        "source": 1,
+        "initial_target": 2,
+        "reassessed": true,
+        "perceived_cost": 3.2,
+        "actual_cost": 9.0
+      },
+      {
+        "agent_id": 5,
+        "source": 1,
+        "initial_target": 2,
+        "reassessed": true,
+        "perceived_cost": 3.2,
+        "actual_cost": 9.0
+      },
+      {
+        "agent_id": 6,
+        "source": 1,
+        "initial_target": 2,
+        "reassessed": true,
+        "perceived_cost": 3.2,
+        "actual_cost": 9.0
+      },
+      {
+        "agent_id": 7,
+        "source": 1,
+        "initial_target": 2,
+        "reassessed": true,
+        "perceived_cost": 3.2,
+        "actual_cost": 9.0
+      },
+      {
+        "agent_id": 8,
+        "source": 1,
+        "initial_target": 2,
+        "reassessed": true,
+        "perceived_cost": 3.2,
+        "actual_cost": 9.0
+      },
+      {
+        "agent_id": 9,
+        "source": 1,
+        "initial_target": 2,
+        "reassessed": true,
+        "perceived_cost": 3.2,
+        "actual_cost": 9.0
+      },
+      {
+        "agent_id": 10,
+        "source": 1,
+        "initial_target": 2,
+        "reassessed": true,
+        "perceived_cost": 3.2,
+        "actual_cost": 9.0
+      },
+      {
+        "agent_id": 11,
+        "source": 1,
+        "initial_target": 2,
+        "reassessed": true,
+        "perceived_cost": 3.2,
+        "actual_cost": 9.0
+      },
+      {
+        "agent_id": 12,
+        "source": 1,
+        "initial_target": 2,
+        "reassessed": true,
+        "perceived_cost": 3.2,
+        "actual_cost": 9.0
+      },
+      {
+        "agent_id": 13,
+        "source": 1,
+        "initial_target": 2,
+        "reassessed": true,
+        "perceived_cost": 3.2,
+        "actual_cost": 9.0
+      },
+      {
+        "agent_id": 14,
+        "source": 1,
+        "initial_target": 2,
+        "reassessed": true,
+        "perceived_cost": 3.2,
+        "actual_cost": 9.0
+      },
+      {
+        "agent_id": 15,
+        "source": 1,
+        "initial_target": 2,
+        "reassessed": true,
+        "perceived_cost": 3.2,
+        "actual_cost": 9.0
+      },
+      {
+        "agent_id": 16,
+        "source": 1,
+        "initial_target": 2,
+        "reassessed": true,
+        "perceived_cost": 3.2,
+        "actual_cost": 9.0
+      },
+      {
+        "agent_id": 17,
+        "source": 1,
+        "initial_target": 2,
+        "reassessed": true,
+        "perceived_cost": 3.2,
+        "actual_cost": 9.0
+      },
+      {
+        "agent_id": 18,
+        "source": 1,
+        "initial_target": 2,
+        "reassessed": true,
+        "perceived_cost": 3.2,
+        "actual_cost": 9.0
+      },
+      {
+        "agent_id": 19,
+        "source": 1,
+        "initial_target": 2,
+        "reassessed": true,
+        "perceived_cost": 3.2,
+        "actual_cost": 9.0
+      },
+      {
+        "agent_id": 20,
+        "source": 1,
+        "initial_target": 2,
+        "reassessed": true,
+        "perceived_cost": 3.2,
+        "actual_cost": 9.0
+      },
+      {
+        "agent_id": 21,
+        "source": 1,
+        "initial_target": 2,
+        "reassessed": true,
+        "perceived_cost": 3.2,
+        "actual_cost": 9.0
+      },
+      {
+        "agent_id": 22,
+        "source": 1,
+        "initial_target": 2,
+        "reassessed": true,
+        "perceived_cost": 3.2,
+        "actual_cost": 9.0
+      },
+      {
+        "agent_id": 23,
+        "source": 1,
+        "initial_target": 2,
+        "reassessed": true,
+        "perceived_cost": 3.2,
+        "actual_cost": 9.0
+      },
+      {
+        "agent_id": 24,
+        "source": 1,
+        "initial_target": 2,
+        "reassessed": true,
+        "perceived_cost": 3.2,
+        "actual_cost": 9.0
+      },
+      {
+        "agent_id": 25,
+        "source": 1,
+        "initial_target": 2,
+        "reassessed": true,
+        "perceived_cost": 3.2,
+        "actual_cost": 9.0
+      },
+      {
+        "agent_id": 26,
+        "source": 1,
+        "initial_target": 2,
+        "reassessed": true,
+        "perceived_cost": 3.2,
+        "actual_cost": 9.0
+      },
+      {
+        "agent_id": 27,
+        "source": 1,
+        "initial_target": 2,
+        "reassessed": true,
+        "perceived_cost": 3.2,
+        "actual_cost": 9.0
+      },
+      {
+        "agent_id": 28,
+        "source": 1,
+        "initial_target": 2,
+        "reassessed": true,
+        "perceived_cost": 3.2,
+        "actual_cost": 9.0
+      },
+      {
+        "agent_id": 29,
+        "source": 1,
+        "initial_target": 2,
+        "reassessed": true,
+        "perceived_cost": 3.2,
+        "actual_cost": 9.0
+      }
+    ],
+    "new_flows": [
+      {
+        "source": 1,
+        "target": 3,
+        "flow": 30
+      }
+    ],
+    "positions": {
+      "0": 3,
+      "1": 3,
+      "2": 3,
+      "3": 3,
+      "4": 3,
+      "5": 3,
+      "6": 3,
+      "7": 3,
+      "8": 3,
+      "9": 3,
+      "10": 3,
+      "11": 3,
+      "12": 3,
+      "13": 3,
+      "14": 3,
+      "15": 3,
+      "16": 3,
+      "17": 3,
+      "18": 3,
+      "19": 3,
+      "20": 3,
+      "21": 3,
+      "22": 3,
+      "23": 3,
+      "24": 3,
+      "25": 3,
+      "26": 3,
+      "27": 3,
+      "28": 3,
+      "29": 3
+    },
+    "total_cost": 270.0
+  },
+  {
+    "timestep": 1,
+    "previous_flows": [
+      {
+        "source": 1,
+        "target": 2,
+        "flow": 0
+      },
+      {
+        "source": 1,
+        "target": 3,
+        "flow": 30
+      },
+      {
+        "source": 2,
+        "target": 4,
+        "flow": 0
+      },
+      {
+        "source": 3,
+        "target": 4,
+        "flow": 0
+      }
+    ],
+    "initial_flows": [
+      {
+        "source": 3,
+        "target": 4,
+        "flow": 30
+      }
+    ],
+    "decisions": [
+      {
+        "agent_id": 0,
+        "source": 3,
+        "initial_target": 4,
+        "reassessed": false,
+        "perceived_cost": 10.0,
+        "actual_cost": 9.0
+      },
+      {
+        "agent_id": 1,
+        "source": 3,
+        "initial_target": 4,
+        "reassessed": false,
+        "perceived_cost": 6.4,
+        "actual_cost": 9.0
+      },
+      {
+        "agent_id": 2,
+        "source": 3,
+        "initial_target": 4,
+        "reassessed": false,
+        "perceived_cost": 7.6000000000000005,
+        "actual_cost": 9.0
+      },
+      {
+        "agent_id": 3,
+        "source": 3,
+        "initial_target": 4,
+        "reassessed": false,
+        "perceived_cost": 8.8,
+        "actual_cost": 9.0
+      },
+      {
+        "agent_id": 4,
+        "source": 3,
+        "initial_target": 4,
+        "reassessed": false,
+        "perceived_cost": 9.600000000000001,
+        "actual_cost": 9.0
+      },
+      {
+        "agent_id": 5,
+        "source": 3,
+        "initial_target": 4,
+        "reassessed": false,
+        "perceived_cost": 10.8,
+        "actual_cost": 9.0
+      },
+      {
+        "agent_id": 6,
+        "source": 3,
+        "initial_target": 4,
+        "reassessed": false,
+        "perceived_cost": 8.399999999999999,
+        "actual_cost": 9.0
+      },
+      {
+        "agent_id": 7,
+        "source": 3,
+        "initial_target": 4,
+        "reassessed": false,
+        "perceived_cost": 9.600000000000001,
+        "actual_cost": 9.0
+      },
+      {
+        "agent_id": 8,
+        "source": 3,
+        "initial_target": 4,
+        "reassessed": false,
+        "perceived_cost": 6.799999999999999,
+        "actual_cost": 9.0
+      },
+      {
+        "agent_id": 9,
+        "source": 3,
+        "initial_target": 4,
+        "reassessed": false,
+        "perceived_cost": 10.399999999999999,
+        "actual_cost": 9.0
+      },
+      {
+        "agent_id": 10,
+        "source": 3,
+        "initial_target": 4,
+        "reassessed": false,
+        "perceived_cost": 10.0,
+        "actual_cost": 9.0
+      },
+      {
+        "agent_id": 11,
+        "source": 3,
+        "initial_target": 4,
+        "reassessed": false,
+        "perceived_cost": 8.8,
+        "actual_cost": 9.0
+      },
+      {
+        "agent_id": 12,
+        "source": 3,
+        "initial_target": 4,
+        "reassessed": false,
+        "perceived_cost": 9.2,
+        "actual_cost": 9.0
+      },
+      {
+        "agent_id": 13,
+        "source": 3,
+        "initial_target": 4,
+        "reassessed": false,
+        "perceived_cost": 9.600000000000001,
+        "actual_cost": 9.0
+      },
+      {
+        "agent_id": 14,
+        "source": 3,
+        "initial_target": 4,
+        "reassessed": false,
+        "perceived_cost": 7.2,
+        "actual_cost": 9.0
+      },
+      {
+        "agent_id": 15,
+        "source": 3,
+        "initial_target": 4,
+        "reassessed": false,
+        "perceived_cost": 10.399999999999999,
+        "actual_cost": 9.0
+      },
+      {
+        "agent_id": 16,
+        "source": 3,
+        "initial_target": 4,
+        "reassessed": false,
+        "perceived_cost": 8.399999999999999,
+        "actual_cost": 9.0
+      },
+      {
+        "agent_id": 17,
+        "source": 3,
+        "initial_target": 4,
+        "reassessed": false,
+        "perceived_cost": 10.0,
+        "actual_cost": 9.0
+      },
+      {
+        "agent_id": 18,
+        "source": 3,
+        "initial_target": 4,
+        "reassessed": false,
+        "perceived_cost": 10.0,
+        "actual_cost": 9.0
+      },
+      {
+        "agent_id": 19,
+        "source": 3,
+        "initial_target": 4,
+        "reassessed": false,
+        "perceived_cost": 8.0,
+        "actual_cost": 9.0
+      },
+      {
+        "agent_id": 20,
+        "source": 3,
+        "initial_target": 4,
+        "reassessed": false,
+        "perceived_cost": 8.399999999999999,
+        "actual_cost": 9.0
+      },
+      {
+        "agent_id": 21,
+        "source": 3,
+        "initial_target": 4,
+        "reassessed": false,
+        "perceived_cost": 8.399999999999999,
+        "actual_cost": 9.0
+      },
+      {
+        "agent_id": 22,
+        "source": 3,
+        "initial_target": 4,
+        "reassessed": false,
+        "perceived_cost": 9.2,
+        "actual_cost": 9.0
+      },
+      {
+        "agent_id": 23,
+        "source": 3,
+        "initial_target": 4,
+        "reassessed": false,
+        "perceived_cost": 8.0,
+        "actual_cost": 9.0
+      },
+      {
+        "agent_id": 24,
+        "source": 3,
+        "initial_target": 4,
+        "reassessed": false,
+        "perceived_cost": 8.0,
+        "actual_cost": 9.0
+      },
+      {
+        "agent_id": 25,
+        "source": 3,
+        "initial_target": 4,
+        "reassessed": false,
+        "perceived_cost": 7.6000000000000005,
+        "actual_cost": 9.0
+      },
+      {
+        "agent_id": 26,
+        "source": 3,
+        "initial_target": 4,
+        "reassessed": false,
+        "perceived_cost": 10.8,
+        "actual_cost": 9.0
+      },
+      {
+        "agent_id": 27,
+        "source": 3,
+        "initial_target": 4,
+        "reassessed": false,
+        "perceived_cost": 8.8,
+        "actual_cost": 9.0
+      },
+      {
+        "agent_id": 28,
+        "source": 3,
+        "initial_target": 4,
+        "reassessed": false,
+        "perceived_cost": 8.8,
+        "actual_cost": 9.0
+      },
+      {
+        "agent_id": 29,
+        "source": 3,
+        "initial_target": 4,
+        "reassessed": false,
+        "perceived_cost": 7.2,
+        "actual_cost": 9.0
+      }
+    ],
+    "new_flows": [
+      {
+        "source": 3,
+        "target": 4,
+        "flow": 30
+      }
+    ],
+    "positions": {
+      "0": 4,
+      "1": 4,
+      "2": 4,
+      "3": 4,
+      "4": 4,
+      "5": 4,
+      "6": 4,
+      "7": 4,
+      "8": 4,
+      "9": 4,
+      "10": 4,
+      "11": 4,
+      "12": 4,
+      "13": 4,
+      "14": 4,
+      "15": 4,
+      "16": 4,
+      "17": 4,
+      "18": 4,
+      "19": 4,
+      "20": 4,
+      "21": 4,
+      "22": 4,
+      "23": 4,
+      "24": 4,
+      "25": 4,
+      "26": 4,
+      "27": 4,
+      "28": 4,
+      "29": 4
+    },
+    "total_cost": 540.0
+  }
+]

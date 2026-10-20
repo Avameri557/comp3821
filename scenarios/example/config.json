@@ -1,5 +1,5 @@
 {
   "max_timesteps": 100,
-  "record_history": true,
+  "record_history": false,
   "seed": 10
 }
