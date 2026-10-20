@@ -1,4 +1,6 @@
 from dataclasses import dataclass, field
+import random
+
 
 @dataclass
 class Agent:
@@ -15,7 +17,6 @@ class Agent:
     def __post_init__(self):
         if not 0 <= self.alpha <= 1:
             raise ValueError("alpha must be between 0 and 1")
-
         self.current_node = self.origin
         self.route_history = [self.origin]
         self.arrived = self.origin == self.destination
@@ -24,21 +25,44 @@ class Agent:
         self.current_node = next_node
         self.route_history.append(next_node)
         self.total_cost += cost
-
         if self.current_node == self.destination:
             self.arrived = True
 
 
 class InformationModel:
-    def __init__(self, alpha=1.0):
+    """Sample other agents' provisional intentions before final commitment.
+
+    Alpha is the probability of observing each other agent's intended edge.
+    An observed count k estimates the total other-agent count as k / alpha.
+    This estimates initial intentions, not final realised congestion.
+    """
+
+    def __init__(self, alpha=1.0, rng=None):
         if not 0 <= alpha <= 1:
             raise ValueError("alpha must be between 0 and 1")
         self.alpha = alpha
+        self.rng = rng if rng is not None else random.Random()
 
-    def get_perceived_costs(self, network):
-        # To be updated with better information function
+    def get_perceived_costs(self, network, intentions=None, agent=None):
+        """Estimate edge costs for a candidate move.
+
+        At alpha=0, use free-flow costs. For alpha>0, sample each other
+        agent independently and extrapolate their provisional edge choice.
+        The observing agent's own possible entry is added by the routing
+        strategy when evaluating a candidate first edge.
+        """
+        intentions = intentions or []
+        observed = {}
+        for intention in intentions:
+            if agent is not None and intention["agent"].agent_id == agent.agent_id:
+                continue
+            edge = (intention["source"], intention["target"])
+            if self.rng.random() < self.alpha:
+                observed[edge] = observed.get(edge, 0) + 1
+
         return {
-            (u, v): data["edge"].cost(flow=0)
-                    + self.alpha * data["edge"].cost()
+            (u, v): data["edge"].cost(
+                flow=(observed.get((u, v), 0) / self.alpha if self.alpha else 0)
+            )
             for u, v, data in network.graph.edges(data=True)
         }
