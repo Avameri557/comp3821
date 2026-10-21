@@ -9,5 +9,14 @@ Please make a new branch for any new features, ideally with the naming conventio
 ## Simulation v1
 Import agents, networks and configuration JSONs according to the ```example``` and ```generated``` template. 
 
-To run simulation, run: 
+To run manual simulation, run: 
 `python -m src.simulation.runner --scenario scenarios/<scenario-name> --output results/<scenario-name>`
+
+To run stage 1 symmetric tests, run:
+```
+python -m src.simulation.symmetric_sweep \
+        --scenario scenarios/<scenario-name> \
+        --output results/<scenario-name> \
+        --trials <how many times to repeat> \
+        --alpha-step <alpha interval>
+```
