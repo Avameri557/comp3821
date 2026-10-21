@@ -1,4 +1,5 @@
 from collections import Counter
+import random
 
 import networkx as nx
 
@@ -8,13 +9,17 @@ from src.components.routing_strategies import SelfishRouting
 
 
 class Simulation:
-    def __init__(self, network, agents, record_history=True):
+    def __init__(self, network, agents, record_history=True, seed=None, revision_percentage=100):
         self.network = network
         self.agents = agents
         self.routing = SelfishRouting()
         self.timestep = 0
         self.record_history = record_history
         self.history = []
+        if isinstance(revision_percentage, bool) or not isinstance(revision_percentage, (int, float)) or not 0 <= revision_percentage <= 100:
+            raise ValueError("revision_percentage must be a number between 0 and 100")
+        self.revision_percentage = revision_percentage
+        self.rng = random.Random(seed)
         self._validate()
 
     def _validate(self):
@@ -37,22 +42,76 @@ class Simulation:
             (u, v): data["edge"].flow
             for u, v, data in self.network.graph.edges(data=True)
         }
-        decisions = []
+
+        # Agents pick a path based on previous flow snapshot
+        free_flow_costs = {
+            (u, v): data["edge"].cost(flow=0)
+            for u, v, data in self.network.graph.edges(data=True)
+        }
+        intentions = []
         for agent in self.agents:
             if agent.arrived:
                 continue
             perceived_costs = InformationModel(agent.alpha).get_perceived_costs(self.network)
             next_node = self.routing.choose_next_node(
-                agent, self.network.graph, perceived_costs
+                agent, self.network.graph, free_flow_costs
+            )
+            if next_node is not None:
+                intentions.append({
+                    "agent": agent,
+                    "source": agent.current_node,
+                    "target": next_node,
+                })
+
+        # Select an exact percentage (rounded to nearest agent) for reassessment.
+        review_count = int(len(intentions) * self.revision_percentage / 100 + 0.5)
+        reviewers = {id(item) for item in self.rng.sample(intentions, review_count)}
+
+        # Check other agent intentions exactly once. Revisions are not revealed until after
+        decisions = []
+        for intention in intentions:
+            agent = intention["agent"]
+            if id(intention) not in reviewers:
+                source, target = intention["source"], intention["target"]
+                decisions.append({
+                    "agent": agent, "source": source, "target": target,
+                    "initial_target": target,
+                    "perceived_cost": free_flow_costs[(source, target)],
+                    "review_eligible": False,
+                })
+                continue
+
+            perceived_costs = InformationModel(
+                agent.alpha, rng=self.rng
+            ).get_perceived_costs(self.network, intentions, agent=agent)
+
+            # Include the agent's own decision when comparing the initial edge.
+            # Original scan does not include itself
+            candidate_costs = dict(perceived_costs)
+            for _, target in self.network.graph.out_edges(agent.current_node):
+                edge = self.network.get_edge(agent.current_node, target)
+                estimated_others = (
+                    (perceived_costs[(agent.current_node, target)] - edge.a) / edge.b
+                    if edge.b > 0 else 0
+                )
+                candidate_costs[(agent.current_node, target)] = edge.cost(
+                    flow=estimated_others + 1
+                )
+
+            next_node = self.routing.choose_next_node(
+                agent, self.network.graph, candidate_costs
             )
             if next_node is not None:
                 decisions.append({
                     "agent": agent,
                     "source": agent.current_node,
                     "target": next_node,
-                    "perceived_cost": perceived_costs[(agent.current_node, next_node)]
+                    "initial_target": intention["target"],
+                    "review_eligible": True,
+                    "perceived_cost": candidate_costs[(agent.current_node, next_node)],
                 })
 
+        # Lock in final decision
         new_flows = Counter((d["source"], d["target"]) for d in decisions)
         for u, v, data in self.network.graph.edges(data=True):
             data["edge"].flow = new_flows[(u, v)]
@@ -66,18 +125,23 @@ class Simulation:
             decision_log.append({
                 "agent_id": agent.agent_id,
                 "source": source,
-                "target": target,
+                "initial_target": decision["initial_target"],
+                "reassessed": target != decision["initial_target"],
+                "review_eligible": decision["review_eligible"],
                 "perceived_cost": decision["perceived_cost"],
-                "actual_cost": actual_cost
+                "actual_cost": actual_cost,
             })
 
         snapshot = {
             "timestep": self.timestep,
             "previous_flows": previous_flows,
+            "initial_flows": dict(Counter(
+                (d["source"], d["target"]) for d in intentions
+            )),
             "decisions": decision_log,
             "new_flows": dict(new_flows),
             "positions": {agent.agent_id: agent.current_node for agent in self.agents},
-            "total_cost": sum(agent.total_cost for agent in self.agents)
+            "total_cost": sum(agent.total_cost for agent in self.agents),
         }
         if self.record_history:
             self.history.append(snapshot)
@@ -92,7 +156,6 @@ class Simulation:
             yield self.step()
 
     def run_until_complete(self, max_steps=10000):
-        """Execute headlessly; distinguish completed and timed-out runs."""
         if max_steps < 0:
             raise ValueError("max_steps must be nonnegative")
         for _ in self.run(max_steps=max_steps):
@@ -118,19 +181,21 @@ class Simulation:
                     "alpha": agent.alpha,
                     "arrived": agent.arrived,
                     "route": agent.route_history,
-                    "cost": agent.total_cost
+                    "cost": agent.total_cost,
                 }
                 for agent in self.agents
-            ]
+            ],
         }
 
 
 def display_step(snapshot):
     print(f"\n--- Timestep {snapshot['timestep']} ---")
     print("Previous congestion:", snapshot["previous_flows"])
+    print("Initial intentions:", snapshot["initial_flows"])
     for d in snapshot["decisions"]:
         print(
-            f"Agent {d['agent_id']}: {d['source']} -> {d['target']} | "
+            f"Agent {d['agent_id']}: {d['source']} -> {d['target']} "
+            f"(initially {d['initial_target']}) | "
             f"Perceived: {d['perceived_cost']:.2f} | Actual: {d['actual_cost']:.2f}"
         )
     print("Updated congestion:", snapshot["new_flows"])
