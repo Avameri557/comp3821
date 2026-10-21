@@ -91,10 +91,15 @@ def load_scenario(directory):
             )
             for item in agent_data["agents"]
         ]
+
+    revision_percentage = config.get("revision_percentage", 100)
+    if isinstance(revision_percentage, bool) or not isinstance(revision_percentage, (int, float)) or not 0 <= revision_percentage <= 100:
+        raise ValueError("revision_percentage must be a number between 0 and 100")
     
     simulation = Simulation(
         network, agents,
         record_history=config.get("record_history", False),
         seed=seed,
+        revision_percentage=revision_percentage,
     )
     return simulation, config

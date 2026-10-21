@@ -7,7 +7,7 @@ Please make a new branch for any new features, ideally with the naming conventio
 # Network Loading Guide
 
 ## Simulation v1
-Import agents, networks and configuration JSONs according to the example template. 
+Import agents, networks and configuration JSONs according to the ```example``` and ```generated``` template. 
 
 To run simulation, run: 
 `python -m src.simulation.runner --scenario scenarios/<scenario-name> --output results/<scenario-name>`
