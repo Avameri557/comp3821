@@ -9,13 +9,16 @@ from src.components.routing_strategies import SelfishRouting
 
 
 class Simulation:
-    def __init__(self, network, agents, record_history=True, seed=None):
+    def __init__(self, network, agents, record_history=True, seed=None, revision_percentage=100):
         self.network = network
         self.agents = agents
         self.routing = SelfishRouting()
         self.timestep = 0
         self.record_history = record_history
         self.history = []
+        if isinstance(revision_percentage, bool) or not isinstance(revision_percentage, (int, float)) or not 0 <= revision_percentage <= 100:
+            raise ValueError("revision_percentage must be a number between 0 and 100")
+        self.revision_percentage = revision_percentage
         self.rng = random.Random(seed)
         self._validate()
 
@@ -60,10 +63,24 @@ class Simulation:
                     "target": next_node,
                 })
 
+        # Select an exact percentage (rounded to nearest agent) for reassessment.
+        review_count = int(len(intentions) * self.revision_percentage / 100 + 0.5)
+        reviewers = {id(item) for item in self.rng.sample(intentions, review_count)}
+
         # Check other agent intentions exactly once. Revisions are not revealed until after
         decisions = []
         for intention in intentions:
             agent = intention["agent"]
+            if id(intention) not in reviewers:
+                source, target = intention["source"], intention["target"]
+                decisions.append({
+                    "agent": agent, "source": source, "target": target,
+                    "initial_target": target,
+                    "perceived_cost": free_flow_costs[(source, target)],
+                    "review_eligible": False,
+                })
+                continue
+
             perceived_costs = InformationModel(
                 agent.alpha, rng=self.rng
             ).get_perceived_costs(self.network, intentions, agent=agent)
@@ -90,6 +107,7 @@ class Simulation:
                     "source": agent.current_node,
                     "target": next_node,
                     "initial_target": intention["target"],
+                    "review_eligible": True,
                     "perceived_cost": candidate_costs[(agent.current_node, next_node)],
                 })
 
@@ -109,6 +127,7 @@ class Simulation:
                 "source": source,
                 "initial_target": decision["initial_target"],
                 "reassessed": target != decision["initial_target"],
+                "review_eligible": decision["review_eligible"],
                 "perceived_cost": decision["perceived_cost"],
                 "actual_cost": actual_cost,
             })
