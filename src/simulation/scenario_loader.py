@@ -8,7 +8,7 @@ from src.simulation.simulator import Simulation
 
 import networkx as nx
 
-def generate_agents(spec, network, rng):
+def generate_agents(spec, network, rng, start_id=0):
     # Generates agents from a total count, candidate src/dest nodes and alpha
     if not isinstance(spec, dict):
         raise ValueError("agents.generate must be an object")
@@ -44,7 +44,7 @@ def generate_agents(spec, network, rng):
         raise ValueError("No reachable source/destination pairs with distinct nodes")
 
     return [
-        Agent(agent_id=i, origin=origin, destination=destination, alpha=alpha)
+        Agent(agent_id=start_id + i, origin=origin, destination=destination, alpha=alpha)
         for i in range(count)
         for origin, destination in [rng.choice(valid_pairs)]
     ]
@@ -85,7 +85,16 @@ def load_scenario(directory):
         raise ValueError("agents.json must contain exactly one of 'agents' or 'generate'")
 
     if "generate" in agent_data:
-        agents = generate_agents(agent_data["generate"], network, random.Random(seed))
+        specs = agent_data["generate"]
+        if isinstance(specs, dict):
+            specs = [specs]
+        if not isinstance(specs, list) or not specs:
+            raise ValueError("agents.generate must be an object or a nonempty array of objects")
+        rng = random.Random(seed)
+        agents = []
+        for spec in specs:
+            batch = generate_agents(spec, network, rng, start_id=len(agents))
+            agents.extend(batch)
     else:
         agents = [
             Agent(
