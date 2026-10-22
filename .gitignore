@@ -11,3 +11,10 @@ __pycache__/
 .idea/
 *.swp
 *.swo
+
+# Virtual Environments
+comp3821/
+venv/
+.venv/
+env/
+.env/
