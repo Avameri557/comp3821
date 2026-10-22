@@ -1,15 +1,3 @@
-
-"""
-Run a controlled alpha sweep over an existing scenario.
-
-Usage:
-    python -m src.simulation.alpha_sweep \
-        --scenario scenarios/generated \
-        --output results/alpha_sweep \
-        --trials 30 \
-        --alpha-step 0.05
-"""
-
 import argparse
 import csv
 import json

@@ -49,6 +49,18 @@ def generate_agents(spec, network, rng):
         for origin, destination in [rng.choice(valid_pairs)]
     ]
 
+def load_network(network_data):
+    network = Network()
+    for node in network_data.get("nodes", []):
+        network.graph.add_node(node)
+    for edge in network_data["edges"]:
+        cost = edge.get("cost", edge)
+        if cost.get("type", "linear") != "linear":
+            raise ValueError("Only linear edge costs are supported")
+        network.add_edge(edge["from"], edge["to"], a=cost["a"], b=cost["b"])
+
+    return network
+
 def load_scenario(directory):
     directory = Path(directory)
     def read(name):
@@ -59,14 +71,7 @@ def load_scenario(directory):
     agent_data = read("agents.json")
     config = read("config.json") if (directory / "config.json").exists() else {}
 
-    network = Network()
-    for node in network_data.get("nodes", []):
-        network.graph.add_node(node)
-    for edge in network_data["edges"]:
-        cost = edge.get("cost", edge)
-        if cost.get("type", "linear") != "linear":
-            raise ValueError("Only linear edge costs are supported")
-        network.add_edge(edge["from"], edge["to"], a=cost["a"], b=cost["b"])
+    network = load_network(network_data)
 
     max_steps = config.get("max_timesteps", 10000)
     if not isinstance(max_steps, int) or isinstance(max_steps, bool) or max_steps < 0:
