@@ -1,0 +1,10 @@
+{
+  "max_timesteps": 100,
+  "record_history": true,
+  "seed": 42,
+  "revision_percentage": 100,
+  "cascade": {
+    "heats": 20,
+    "heat_interval": 1
+  }
+}
