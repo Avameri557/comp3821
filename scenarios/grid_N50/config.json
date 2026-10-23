@@ -1,0 +1,6 @@
+{
+  "max_timesteps": 1000,
+  "record_history": true,
+  "seed": 42,
+  "revision_percentage": 100
+}
