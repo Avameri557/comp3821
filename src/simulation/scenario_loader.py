@@ -8,11 +8,7 @@ from src.simulation.simulator import Simulation
 
 import networkx as nx
 
-<<<<<<< HEAD
 def generate_agents(spec, network, rng, id_start=0, heat=0, release_time=0):
-    # Generates agents from a total count, candidate src/dest nodes and alpha
-=======
-def generate_agents(spec, network, rng):
     """
     Create agents from the "generate" block of agents.json.
 
@@ -30,7 +26,6 @@ def generate_agents(spec, network, rng):
     Raises:
         ValueError: If the spec is malformed or no valid pair exists.
     """
->>>>>>> main
     if not isinstance(spec, dict):
         raise ValueError("agents.generate must be an object")
 
@@ -71,8 +66,6 @@ def generate_agents(spec, network, rng):
         for origin, destination in [rng.choice(valid_pairs)]
     ]
 
-<<<<<<< HEAD
-
 def read_cascade(config):
     """(heats, heat_interval, enabled) from config["cascade"], if present.
 
@@ -93,29 +86,9 @@ def read_cascade(config):
             raise ValueError(f"cascade.{name} must be an integer >= {minimum}")
     return heats, interval, True
 
-def load_scenario(directory, seed=None):
+def load_scenario(directory, overrides=None, seed=None):
     """Load a scenario folder. `seed`, if given, overrides config.json's seed
     (it controls both agent generation and the simulation's random draws)."""
-=======
-def load_scenario(directory, overrides=None):
-    """
-    Build a Simulation from a scenario directory.
-
-    Args:
-        directory: Folder containing network.json, agents.json
-            and (optionally) config.json.
-        overrides: Optional dict of config values applied on top
-            of config.json, e.g. {"seed": 7}. Validated like
-            values read from the file. Files are not modified.
-
-    Returns:
-        (simulation, config), where config is the merged
-        configuration actually used.
-
-    Raises:
-        ValueError: If the network, agents or config are invalid.
-    """
->>>>>>> main
     directory = Path(directory)
     def read(name):
         with (directory / name).open(encoding="utf-8") as f:
