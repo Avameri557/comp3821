@@ -1,0 +1,791 @@
+{
+  "completed": true,
+  "status": "completed",
+  "timesteps": 2,
+  "agent_count": 60,
+  "arrived_count": 60,
+  "total_cost": 53.98,
+  "average_cost": 0.8996666666666666,
+  "agents": [
+    {
+      "id": 0,
+      "origin": 1,
+      "destination": 4,
+      "alpha": 0.4,
+      "arrived": true,
+      "route": [
+        1,
+        3,
+        4
+      ],
+      "cost": 1.0
+    },
+    {
+      "id": 1,
+      "origin": 1,
+      "destination": 4,
+      "alpha": 0.4,
+      "arrived": true,
+      "route": [
+        1,
+        3,
+        4
+      ],
+      "cost": 1.0
+    },
+    {
+      "id": 2,
+      "origin": 1,
+      "destination": 4,
+      "alpha": 0.4,
+      "arrived": true,
+      "route": [
+        1,
+        3,
+        4
+      ],
+      "cost": 1.0
+    },
+    {
+      "id": 3,
+      "origin": 1,
+      "destination": 4,
+      "alpha": 0.4,
+      "arrived": true,
+      "route": [
+        1,
+        3,
+        4
+      ],
+      "cost": 1.0
+    },
+    {
+      "id": 4,
+      "origin": 1,
+      "destination": 4,
+      "alpha": 0.4,
+      "arrived": true,
+      "route": [
+        1,
+        3,
+        4
+      ],
+      "cost": 1.0
+    },
+    {
+      "id": 5,
+      "origin": 1,
+      "destination": 4,
+      "alpha": 0.4,
+      "arrived": true,
+      "route": [
+        1,
+        3,
+        4
+      ],
+      "cost": 1.0
+    },
+    {
+      "id": 6,
+      "origin": 1,
+      "destination": 4,
+      "alpha": 0.4,
+      "arrived": true,
+      "route": [
+        1,
+        2,
+        4
+      ],
+      "cost": 0.14
+    },
+    {
+      "id": 7,
+      "origin": 1,
+      "destination": 4,
+      "alpha": 0.4,
+      "arrived": true,
+      "route": [
+        1,
+        3,
+        4
+      ],
+      "cost": 1.0
+    },
+    {
+      "id": 8,
+      "origin": 1,
+      "destination": 4,
+      "alpha": 0.4,
+      "arrived": true,
+      "route": [
+        1,
+        3,
+        4
+      ],
+      "cost": 1.0
+    },
+    {
+      "id": 9,
+      "origin": 1,
+      "destination": 4,
+      "alpha": 0.4,
+      "arrived": true,
+      "route": [
+        1,
+        3,
+        4
+      ],
+      "cost": 1.0
+    },
+    {
+      "id": 10,
+      "origin": 1,
+      "destination": 4,
+      "alpha": 0.4,
+      "arrived": true,
+      "route": [
+        1,
+        3,
+        4
+      ],
+      "cost": 1.0
+    },
+    {
+      "id": 11,
+      "origin": 1,
+      "destination": 4,
+      "alpha": 0.4,
+      "arrived": true,
+      "route": [
+        1,
+        2,
+        4
+      ],
+      "cost": 0.14
+    },
+    {
+      "id": 12,
+      "origin": 1,
+      "destination": 4,
+      "alpha": 0.4,
+      "arrived": true,
+      "route": [
+        1,
+        2,
+        4
+      ],
+      "cost": 0.14
+    },
+    {
+      "id": 13,
+      "origin": 1,
+      "destination": 4,
+      "alpha": 0.4,
+      "arrived": true,
+      "route": [
+        1,
+        2,
+        4
+      ],
+      "cost": 0.14
+    },
+    {
+      "id": 14,
+      "origin": 1,
+      "destination": 4,
+      "alpha": 0.4,
+      "arrived": true,
+      "route": [
+        1,
+        3,
+        4
+      ],
+      "cost": 1.0
+    },
+    {
+      "id": 15,
+      "origin": 1,
+      "destination": 4,
+      "alpha": 0.4,
+      "arrived": true,
+      "route": [
+        1,
+        3,
+        4
+      ],
+      "cost": 1.0
+    },
+    {
+      "id": 16,
+      "origin": 1,
+      "destination": 4,
+      "alpha": 0.4,
+      "arrived": true,
+      "route": [
+        1,
+        3,
+        4
+      ],
+      "cost": 1.0
+    },
+    {
+      "id": 17,
+      "origin": 1,
+      "destination": 4,
+      "alpha": 0.4,
+      "arrived": true,
+      "route": [
+        1,
+        2,
+        4
+      ],
+      "cost": 0.14
+    },
+    {
+      "id": 18,
+      "origin": 1,
+      "destination": 4,
+      "alpha": 0.4,
+      "arrived": true,
+      "route": [
+        1,
+        3,
+        4
+      ],
+      "cost": 1.0
+    },
+    {
+      "id": 19,
+      "origin": 1,
+      "destination": 4,
+      "alpha": 0.4,
+      "arrived": true,
+      "route": [
+        1,
+        3,
+        4
+      ],
+      "cost": 1.0
+    },
+    {
+      "id": 20,
+      "origin": 1,
+      "destination": 4,
+      "alpha": 0.4,
+      "arrived": true,
+      "route": [
+        1,
+        3,
+        4
+      ],
+      "cost": 1.0
+    },
+    {
+      "id": 21,
+      "origin": 1,
+      "destination": 4,
+      "alpha": 0.4,
+      "arrived": true,
+      "route": [
+        1,
+        3,
+        4
+      ],
+      "cost": 1.0
+    },
+    {
+      "id": 22,
+      "origin": 1,
+      "destination": 4,
+      "alpha": 0.4,
+      "arrived": true,
+      "route": [
+        1,
+        3,
+        4
+      ],
+      "cost": 1.0
+    },
+    {
+      "id": 23,
+      "origin": 1,
+      "destination": 4,
+      "alpha": 0.4,
+      "arrived": true,
+      "route": [
+        1,
+        3,
+        4
+      ],
+      "cost": 1.0
+    },
+    {
+      "id": 24,
+      "origin": 1,
+      "destination": 4,
+      "alpha": 0.4,
+      "arrived": true,
+      "route": [
+        1,
+        3,
+        4
+      ],
+      "cost": 1.0
+    },
+    {
+      "id": 25,
+      "origin": 1,
+      "destination": 4,
+      "alpha": 0.4,
+      "arrived": true,
+      "route": [
+        1,
+        3,
+        4
+      ],
+      "cost": 1.0
+    },
+    {
+      "id": 26,
+      "origin": 1,
+      "destination": 4,
+      "alpha": 0.4,
+      "arrived": true,
+      "route": [
+        1,
+        3,
+        4
+      ],
+      "cost": 1.0
+    },
+    {
+      "id": 27,
+      "origin": 1,
+      "destination": 4,
+      "alpha": 0.4,
+      "arrived": true,
+      "route": [
+        1,
+        3,
+        4
+      ],
+      "cost": 1.0
+    },
+    {
+      "id": 28,
+      "origin": 1,
+      "destination": 4,
+      "alpha": 0.4,
+      "arrived": true,
+      "route": [
+        1,
+        3,
+        4
+      ],
+      "cost": 1.0
+    },
+    {
+      "id": 29,
+      "origin": 1,
+      "destination": 4,
+      "alpha": 0.4,
+      "arrived": true,
+      "route": [
+        1,
+        3,
+        4
+      ],
+      "cost": 1.0
+    },
+    {
+      "id": 30,
+      "origin": 1,
+      "destination": 4,
+      "alpha": 0.6,
+      "arrived": true,
+      "route": [
+        1,
+        3,
+        4
+      ],
+      "cost": 1.0
+    },
+    {
+      "id": 31,
+      "origin": 1,
+      "destination": 4,
+      "alpha": 0.6,
+      "arrived": true,
+      "route": [
+        1,
+        3,
+        4
+      ],
+      "cost": 1.0
+    },
+    {
+      "id": 32,
+      "origin": 1,
+      "destination": 4,
+      "alpha": 0.6,
+      "arrived": true,
+      "route": [
+        1,
+        3,
+        4
+      ],
+      "cost": 1.0
+    },
+    {
+      "id": 33,
+      "origin": 1,
+      "destination": 4,
+      "alpha": 0.6,
+      "arrived": true,
+      "route": [
+        1,
+        3,
+        4
+      ],
+      "cost": 1.0
+    },
+    {
+      "id": 34,
+      "origin": 1,
+      "destination": 4,
+      "alpha": 0.6,
+      "arrived": true,
+      "route": [
+        1,
+        3,
+        4
+      ],
+      "cost": 1.0
+    },
+    {
+      "id": 35,
+      "origin": 1,
+      "destination": 4,
+      "alpha": 0.6,
+      "arrived": true,
+      "route": [
+        1,
+        3,
+        4
+      ],
+      "cost": 1.0
+    },
+    {
+      "id": 36,
+      "origin": 1,
+      "destination": 4,
+      "alpha": 0.6,
+      "arrived": true,
+      "route": [
+        1,
+        3,
+        4
+      ],
+      "cost": 1.0
+    },
+    {
+      "id": 37,
+      "origin": 1,
+      "destination": 4,
+      "alpha": 0.6,
+      "arrived": true,
+      "route": [
+        1,
+        3,
+        4
+      ],
+      "cost": 1.0
+    },
+    {
+      "id": 38,
+      "origin": 1,
+      "destination": 4,
+      "alpha": 0.6,
+      "arrived": true,
+      "route": [
+        1,
+        3,
+        4
+      ],
+      "cost": 1.0
+    },
+    {
+      "id": 39,
+      "origin": 1,
+      "destination": 4,
+      "alpha": 0.6,
+      "arrived": true,
+      "route": [
+        1,
+        3,
+        4
+      ],
+      "cost": 1.0
+    },
+    {
+      "id": 40,
+      "origin": 1,
+      "destination": 4,
+      "alpha": 0.6,
+      "arrived": true,
+      "route": [
+        1,
+        3,
+        4
+      ],
+      "cost": 1.0
+    },
+    {
+      "id": 41,
+      "origin": 1,
+      "destination": 4,
+      "alpha": 0.6,
+      "arrived": true,
+      "route": [
+        1,
+        3,
+        4
+      ],
+      "cost": 1.0
+    },
+    {
+      "id": 42,
+      "origin": 1,
+      "destination": 4,
+      "alpha": 0.6,
+      "arrived": true,
+      "route": [
+        1,
+        3,
+        4
+      ],
+      "cost": 1.0
+    },
+    {
+      "id": 43,
+      "origin": 1,
+      "destination": 4,
+      "alpha": 0.6,
+      "arrived": true,
+      "route": [
+        1,
+        3,
+        4
+      ],
+      "cost": 1.0
+    },
+    {
+      "id": 44,
+      "origin": 1,
+      "destination": 4,
+      "alpha": 0.6,
+      "arrived": true,
+      "route": [
+        1,
+        3,
+        4
+      ],
+      "cost": 1.0
+    },
+    {
+      "id": 45,
+      "origin": 1,
+      "destination": 4,
+      "alpha": 0.6,
+      "arrived": true,
+      "route": [
+        1,
+        3,
+        4
+      ],
+      "cost": 1.0
+    },
+    {
+      "id": 46,
+      "origin": 1,
+      "destination": 4,
+      "alpha": 0.6,
+      "arrived": true,
+      "route": [
+        1,
+        3,
+        4
+      ],
+      "cost": 1.0
+    },
+    {
+      "id": 47,
+      "origin": 1,
+      "destination": 4,
+      "alpha": 0.6,
+      "arrived": true,
+      "route": [
+        1,
+        3,
+        4
+      ],
+      "cost": 1.0
+    },
+    {
+      "id": 48,
+      "origin": 1,
+      "destination": 4,
+      "alpha": 0.6,
+      "arrived": true,
+      "route": [
+        1,
+        3,
+        4
+      ],
+      "cost": 1.0
+    },
+    {
+      "id": 49,
+      "origin": 1,
+      "destination": 4,
+      "alpha": 0.6,
+      "arrived": true,
+      "route": [
+        1,
+        2,
+        4
+      ],
+      "cost": 0.14
+    },
+    {
+      "id": 50,
+      "origin": 1,
+      "destination": 4,
+      "alpha": 0.6,
+      "arrived": true,
+      "route": [
+        1,
+        3,
+        4
+      ],
+      "cost": 1.0
+    },
+    {
+      "id": 51,
+      "origin": 1,
+      "destination": 4,
+      "alpha": 0.6,
+      "arrived": true,
+      "route": [
+        1,
+        3,
+        4
+      ],
+      "cost": 1.0
+    },
+    {
+      "id": 52,
+      "origin": 1,
+      "destination": 4,
+      "alpha": 0.6,
+      "arrived": true,
+      "route": [
+        1,
+        3,
+        4
+      ],
+      "cost": 1.0
+    },
+    {
+      "id": 53,
+      "origin": 1,
+      "destination": 4,
+      "alpha": 0.6,
+      "arrived": true,
+      "route": [
+        1,
+        3,
+        4
+      ],
+      "cost": 1.0
+    },
+    {
+      "id": 54,
+      "origin": 1,
+      "destination": 4,
+      "alpha": 0.6,
+      "arrived": true,
+      "route": [
+        1,
+        2,
+        4
+      ],
+      "cost": 0.14
+    },
+    {
+      "id": 55,
+      "origin": 1,
+      "destination": 4,
+      "alpha": 0.6,
+      "arrived": true,
+      "route": [
+        1,
+        3,
+        4
+      ],
+      "cost": 1.0
+    },
+    {
+      "id": 56,
+      "origin": 1,
+      "destination": 4,
+      "alpha": 0.6,
+      "arrived": true,
+      "route": [
+        1,
+        3,
+        4
+      ],
+      "cost": 1.0
+    },
+    {
+      "id": 57,
+      "origin": 1,
+      "destination": 4,
+      "alpha": 0.6,
+      "arrived": true,
+      "route": [
+        1,
+        3,
+        4
+      ],
+      "cost": 1.0
+    },
+    {
+      "id": 58,
+      "origin": 1,
+      "destination": 4,
+      "alpha": 0.6,
+      "arrived": true,
+      "route": [
+        1,
+        3,
+        4
+      ],
+      "cost": 1.0
+    },
+    {
+      "id": 59,
+      "origin": 1,
+      "destination": 4,
+      "alpha": 0.6,
+      "arrived": true,
+      "route": [
+        1,
+        3,
+        4
+      ],
+      "cost": 1.0
+    }
+  ]
+}
