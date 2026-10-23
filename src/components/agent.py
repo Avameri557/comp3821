@@ -7,6 +7,8 @@ class Agent:
     origin: int
     destination: int
     alpha: float = 1.0
+    heat: int = 0            # which heat (release wave) the agent belongs to
+    release_time: int = 0    # timestep at which the agent enters the graph
 
     current_node: int = field(init=False)
     route_history: list[int] = field(init=False)
@@ -37,7 +39,11 @@ class InformationModel:
         self.alpha = alpha
         self.rng = rng if rng is not None else random.Random()
 
-    def get_perceived_costs(self, network, intentions=None, agent=None):
+    def observe_intentions(self, intentions=None, agent=None):
+        """Count K_e of *other* agents' announced edges that this agent sees.
+
+        Each other agent's intention is seen independently with probability alpha.
+        """
         intentions = intentions or []
         observed = {}
         for intention in intentions:
@@ -46,10 +52,32 @@ class InformationModel:
             edge = (intention["source"], intention["target"])
             if self.rng.random() < self.alpha:
                 observed[edge] = observed.get(edge, 0) + 1
+        return observed
 
+    def estimate_flows(self, network, intentions=None, agent=None, observed=None):
+        """Estimated number of *other* agents intending each edge.
+
+        The observed count is scaled by 1/alpha (unbiased estimate).
+        """
+        if observed is None:
+            observed = self.observe_intentions(intentions, agent)
         return {
-                (u, v): data["edge"].cost(
-                flow=(observed.get((u, v), 0) / self.alpha if self.alpha else 0)
-            )
+            (u, v): (observed.get((u, v), 0) / self.alpha if self.alpha else 0)
+            for u, v in network.graph.edges()
+        }
+
+    def observe_previous_costs(self, last_cost):
+        """Previous costs of the edges this agent sees: each edge independently
+        with probability alpha. Returns {edge: last realised cost}."""
+        return {
+            edge: cost
+            for edge, cost in last_cost.items()
+            if self.rng.random() < self.alpha
+        }
+
+    def get_perceived_costs(self, network, intentions=None, agent=None):
+        estimated = self.estimate_flows(network, intentions, agent)
+        return {
+            (u, v): data["edge"].cost(flow=estimated[(u, v)])
             for u, v, data in network.graph.edges(data=True)
         }

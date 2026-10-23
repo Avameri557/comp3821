@@ -1,0 +1,16 @@
+{
+  "generate": {
+    "count": 1000,
+    "sources": [
+      1,
+      2,
+      3
+    ],
+    "destinations": [
+      19,
+      20,
+      22
+    ],
+    "alpha": 1.0
+  }
+}
