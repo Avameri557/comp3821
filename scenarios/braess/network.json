@@ -4,7 +4,7 @@
   "edges": [
     {
       "from": 1, "to": 2,
-      "cost": {"type": "linear", "a": 0, "b": 0.05}
+      "cost": {"type": "linear", "a": 0, "b": 0.02}
     },
     {
       "from": 2, "to": 4,
@@ -16,7 +16,7 @@
     },
     {
       "from": 3, "to": 4,
-      "cost": {"type": "linear", "a": 0, "b": 0.05}
+      "cost": {"type": "linear", "a": 0, "b": 0.02}
     },
     {
       "from": 2, "to": 3,

@@ -1,6 +1,6 @@
 {
   "generate": {
-    "count": 20,
+    "count": 80,
     "sources": [1],
     "destinations": [4],
     "alpha": 0.05
