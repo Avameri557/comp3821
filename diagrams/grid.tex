@@ -1,0 +1,27 @@
+\documentclass[border=6pt]{standalone}
+\input{common}
+\begin{document}
+\begin{tikzpicture}[x=4.4cm, y=-3.2cm]
+  \foreach \n [count=\i from 0] in {1,...,9} {
+    \pgfmathtruncatemacro\col{mod(\i,3)}
+    \pgfmathtruncatemacro\row{div(\i,3)}
+    \node[v] (\n) at (\col,\row) {\n};
+  }
+  \node[od] at (1) {1};
+  \node[od] at (9) {9};
+  % horizontal edges
+  \draw[e]    (1) -- node[c, above] {$1 + x/N$}    (2);
+  \draw[free] (2) -- node[c, above] {$0$}              (3);
+  \draw[e]    (4) -- node[c, above] {$1.07 + x/N$} (5);
+  \draw[e]    (5) -- node[c, above] {$1.04 + x/N$} (6);
+  \draw[e]    (7) -- node[c, above] {$1.05 + x/N$} (8);
+  \draw[e]    (8) -- node[c, above] {$1.09 + x/N$} (9);
+  % vertical edges
+  \draw[e] (1) -- node[c, left]  {$1.06 + x/N$} (4);
+  \draw[e] (4) -- node[c, left]  {$1.11 + x/N$} (7);
+  \draw[e] (2) -- node[c, right] {$1.03 + x/N$} (5);
+  \draw[e] (5) -- node[c, right] {$1.02 + x/N$} (8);
+  \draw[e] (3) -- node[c, right] {$1.1 + x/N$}  (6);
+  \draw[e] (6) -- node[c, right] {$1.01 + x/N$} (9);
+\end{tikzpicture}
+\end{document}

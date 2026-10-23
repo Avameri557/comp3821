@@ -1,0 +1,74 @@
+\documentclass[border=6pt]{standalone}
+\input{common}
+\definecolor{destfill}{HTML}{FDE7DC}
+\begin{document}
+\begin{tikzpicture}[x=0.36cm, y=0.36cm]
+  \node[od, minimum size=7mm] (1) at (5,51) {1};
+  \node[od, minimum size=7mm] (2) at (32,51) {2};
+  \node[od, minimum size=7mm] (3) at (5,44) {3};
+  \node[v, minimum size=7mm] (4) at (13,44) {4};
+  \node[v, minimum size=7mm] (5) at (22,44) {5};
+  \node[v, minimum size=7mm] (6) at (32,44) {6};
+  \node[v, minimum size=7mm] (7) at (42,38) {7};
+  \node[v, minimum size=7mm] (8) at (32,38) {8};
+  \node[v, minimum size=7mm] (9) at (22,38) {9};
+  \node[v, minimum size=7mm] (10) at (22,32) {10};
+  \node[v, minimum size=7mm] (11) at (13,32) {11};
+  \node[v, minimum size=7mm] (12) at (5,32) {12};
+  \node[v, minimum size=7mm] (13) at (5,5) {13};
+  \node[v, minimum size=7mm] (14) at (13,19) {14};
+  \node[v, minimum size=7mm] (15) at (22,19) {15};
+  \node[v, minimum size=7mm] (16) at (32,32) {16};
+  \node[v, minimum size=7mm] (17) at (32,26) {17};
+  \node[v, minimum size=7mm] (18) at (42,32) {18};
+  \node[v, fill=destfill, minimum size=7mm] (19) at (32,19) {19};
+  \node[v, fill=destfill, minimum size=7mm] (20) at (32,5) {20};
+  \node[v, minimum size=7mm] (21) at (22,5) {21};
+  \node[v, fill=destfill, minimum size=7mm] (22) at (22,13) {22};
+  \node[v, minimum size=7mm] (23) at (13,13) {23};
+  \node[v, minimum size=7mm] (24) at (13,5) {24};
+  \draw[{Latex[length=2mm]}-{Latex[length=2mm]}, line width=0.7pt] (1) -- node[c] {$6$} (2);
+  \draw[{Latex[length=2mm]}-{Latex[length=2mm]}, line width=0.7pt] (1) -- node[c] {$4$} (3);
+  \draw[{Latex[length=2mm]}-{Latex[length=2mm]}, line width=0.7pt] (2) -- node[c] {$5$} (6);
+  \draw[{Latex[length=2mm]}-{Latex[length=2mm]}, line width=0.7pt] (3) -- node[c] {$4$} (4);
+  \draw[{Latex[length=2mm]}-{Latex[length=2mm]}, line width=0.7pt] (3) -- node[c] {$4$} (12);
+  \draw[{Latex[length=2mm]}-{Latex[length=2mm]}, line width=0.7pt] (4) -- node[c] {$2$} (5);
+  \draw[{Latex[length=2mm]}-{Latex[length=2mm]}, line width=0.7pt] (4) -- node[c] {$6$} (11);
+  \draw[{Latex[length=2mm]}-{Latex[length=2mm]}, line width=0.7pt] (5) -- node[c] {$4$} (6);
+  \draw[{Latex[length=2mm]}-{Latex[length=2mm]}, line width=0.7pt] (5) -- node[c] {$5$} (9);
+  \draw[{Latex[length=2mm]}-{Latex[length=2mm]}, line width=0.7pt] (6) -- node[c] {$2$} (8);
+  \draw[{Latex[length=2mm]}-{Latex[length=2mm]}, line width=0.7pt] (7) -- node[c] {$3$} (8);
+  \draw[{Latex[length=2mm]}-{Latex[length=2mm]}, line width=0.7pt] (7) -- node[c] {$2$} (18);
+  \draw[{Latex[length=2mm]}-{Latex[length=2mm]}, line width=0.7pt] (8) -- node[c] {$10$} (9);
+  \draw[{Latex[length=2mm]}-{Latex[length=2mm]}, line width=0.7pt] (8) -- node[c] {$5$} (16);
+  \draw[{Latex[length=2mm]}-{Latex[length=2mm]}, line width=0.7pt] (9) -- node[c] {$3$} (10);
+  \draw[{Latex[length=2mm]}-{Latex[length=2mm]}, line width=0.7pt] (10) -- node[c] {$5$} (11);
+  \draw[{Latex[length=2mm]}-{Latex[length=2mm]}, line width=0.7pt] (10) -- node[c] {$6$} (15);
+  \draw[{Latex[length=2mm]}-{Latex[length=2mm]}, line width=0.7pt] (10) -- node[c] {$4$} (16);
+  \draw[{Latex[length=2mm]}-{Latex[length=2mm]}, line width=0.7pt] (10) -- node[c] {$8$} (17);
+  \draw[{Latex[length=2mm]}-{Latex[length=2mm]}, line width=0.7pt] (11) -- node[c] {$6$} (12);
+  \draw[{Latex[length=2mm]}-{Latex[length=2mm]}, line width=0.7pt] (11) -- node[c] {$4$} (14);
+  \draw[{Latex[length=2mm]}-{Latex[length=2mm]}, line width=0.7pt] (12) -- node[c] {$3$} (13);
+  \draw[{Latex[length=2mm]}-{Latex[length=2mm]}, line width=0.7pt] (13) -- node[c] {$4$} (24);
+  \draw[{Latex[length=2mm]}-{Latex[length=2mm]}, line width=0.7pt] (14) -- node[c] {$5$} (15);
+  \draw[{Latex[length=2mm]}-{Latex[length=2mm]}, line width=0.7pt] (14) -- node[c] {$4$} (23);
+  \draw[{Latex[length=2mm]}-{Latex[length=2mm]}, line width=0.7pt] (15) -- node[c] {$3$} (19);
+  \draw[{Latex[length=2mm]}-{Latex[length=2mm]}, line width=0.7pt] (15) -- node[c] {$3$} (22);
+  \draw[{Latex[length=2mm]}-{Latex[length=2mm]}, line width=0.7pt] (16) -- node[c] {$2$} (17);
+  \draw[{Latex[length=2mm]}-{Latex[length=2mm]}, line width=0.7pt] (16) -- node[c] {$3$} (18);
+  \draw[{Latex[length=2mm]}-{Latex[length=2mm]}, line width=0.7pt] (17) -- node[c] {$2$} (19);
+  \draw[{Latex[length=2mm]}-{Latex[length=2mm]}, line width=0.7pt] (18) -- node[c] {$4$} (20);
+  \draw[{Latex[length=2mm]}-{Latex[length=2mm]}, line width=0.7pt] (19) -- node[c] {$4$} (20);
+  \draw[{Latex[length=2mm]}-{Latex[length=2mm]}, line width=0.7pt] (20) -- node[c] {$6$} (21);
+  \draw[{Latex[length=2mm]}-{Latex[length=2mm]}, line width=0.7pt] (20) -- node[c] {$5$} (22);
+  \draw[{Latex[length=2mm]}-{Latex[length=2mm]}, line width=0.7pt] (21) -- node[c] {$2$} (22);
+  \draw[{Latex[length=2mm]}-{Latex[length=2mm]}, line width=0.7pt] (21) -- node[c] {$3$} (24);
+  \draw[{Latex[length=2mm]}-{Latex[length=2mm]}, line width=0.7pt] (22) -- node[c] {$4$} (23);
+  \draw[{Latex[length=2mm]}-{Latex[length=2mm]}, line width=0.7pt] (23) -- node[c] {$2$} (24);
+  \node[od, minimum size=4mm] (lo) at (47,49) {};
+  \node[right=1mm of lo, font=\footnotesize] {origin (1, 2, 3)};
+  \node[v, fill=destfill, minimum size=4mm] (ld) at (47,46.5) {};
+  \node[right=1mm of ld, font=\footnotesize] {destination (19, 20, 22)};
+  \node[anchor=north west, font=\footnotesize, align=left] at (45.6,44.5) {Every link: cost $a + 0.01x$\\in each direction;\\label shows $a$.\\$N = 1000$ agents.};
+\end{tikzpicture}
+\end{document}
