@@ -4,35 +4,35 @@
   "edges": [
     {
       "from": 1, "to": 2,
-      "cost": {"type": "linear", "a": 1.0, "b": 0.092}
+      "cost": {"type": "linear", "a": 1.0, "b": 0.023}
     },
     {
       "from": 2, "to": 6,
-      "cost": {"type": "linear", "a": 1.0, "b": 0.012}
+      "cost": {"type": "linear", "a": 1.0, "b": 0.003}
     },
     {
       "from": 1, "to": 3,
-      "cost": {"type": "linear", "a": 1.2, "b": 0.084}
+      "cost": {"type": "linear", "a": 1.2, "b": 0.021}
     },
     {
       "from": 3, "to": 6,
-      "cost": {"type": "linear", "a": 1.0, "b": 0.012}
+      "cost": {"type": "linear", "a": 1.0, "b": 0.003}
     },
     {
       "from": 1, "to": 4,
-      "cost": {"type": "linear", "a": 1.4, "b": 0.072}
+      "cost": {"type": "linear", "a": 1.4, "b": 0.018}
     },
     {
       "from": 4, "to": 6,
-      "cost": {"type": "linear", "a": 1.0, "b": 0.012}
+      "cost": {"type": "linear", "a": 1.0, "b": 0.003}
     },
     {
       "from": 1, "to": 5,
-      "cost": {"type": "linear", "a": 1.6, "b": 0.06}
+      "cost": {"type": "linear", "a": 1.6, "b": 0.015}
     },
     {
       "from": 5, "to": 6,
-      "cost": {"type": "linear", "a": 1.0, "b": 0.012}
+      "cost": {"type": "linear", "a": 1.0, "b": 0.003}
     }
   ]
 }

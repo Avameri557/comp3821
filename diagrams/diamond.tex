@@ -8,11 +8,11 @@
   \node[v]  (4) at (4.6,-1.1) {4};
   \node[v]  (5) at (4.6,-3.3) {5};
   \node[od] (6) at (9.2,0) {6};
-  \draw[e] (1) -- node[c, sloped, above, pos=0.55] {$1 + 1.84\,x/N$} (2);
-  \draw[e] (1) -- node[c, sloped, above, pos=0.55] {$1.2 + 1.68\,x/N$} (3);
-  \draw[e] (1) -- node[c, sloped, below, pos=0.55] {$1.4 + 1.44\,x/N$} (4);
-  \draw[e] (1) -- node[c, sloped, below, pos=0.55] {$1.6 + 1.2\,x/N$} (5);
+  \draw[e] (1) -- node[c, sloped, above, pos=0.55] {$1 + 0.023\,x$} (2);
+  \draw[e] (1) -- node[c, sloped, above, pos=0.55] {$1.2 + 0.021\,x$} (3);
+  \draw[e] (1) -- node[c, sloped, below, pos=0.55] {$1.4 + 0.018\,x$} (4);
+  \draw[e] (1) -- node[c, sloped, below, pos=0.55] {$1.6 + 0.015\,x$} (5);
   \foreach \m/\p in {2/above, 3/above, 4/below, 5/below}
-    \draw[e] (\m) -- node[c, sloped, \p, pos=0.45] {$1 + 0.24\,x/N$} (6);
+    \draw[e] (\m) -- node[c, sloped, \p, pos=0.45] {$1 + 0.003\,x$} (6);
 \end{tikzpicture}
 \end{document}
