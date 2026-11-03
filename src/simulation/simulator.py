@@ -1,16 +1,24 @@
 """
 Step-based routing simulation with partial information.
 
+Congestion counts the whole run: an edge costs a + b * x, where x is the
+number of agents whose route uses it at any point. Each agent pays the cost
+of every edge on its final route, worked out once the run ends (the same
+model as the Wardrop and optimum benchmarks).
+
 Every step:
-  1. Each agent still travelling plans its cheapest path on empty-road costs
-     and announces the whole route: its j-th edge is crossed j steps from now.
-  2. A share of agents (revision_percentage) reviews that plan. A reviewing
-     agent sees each other agent's whole route with probability alpha. For
-     every edge and every future step it estimates the load as (routes seen
-     crossing that edge at that step) / alpha, adds itself, and re-plans the
-     cheapest path through time.
-  3. All agents move one edge at the same time. An edge costs a + b * f,
-     where f is the number of agents crossing it in that step.
+  1. Each agent announces its whole route: the edges it has crossed so far
+     plus its cheapest remaining path on empty-road costs. Agents that have
+     arrived announce the route they took.
+  2. Agents still travelling decide one at a time, in a new random order every
+     step. A share of them (revision_percentage) reviews its plan: a reviewing
+     agent sees each other agent's whole route with probability alpha (the
+     revised route for agents that have already decided this step, the
+     announcement for the rest). It estimates every edge's load as (routes
+     seen using that edge) / alpha, adds itself, and re-plans its cheapest
+     remaining path. Its new route replaces its announcement for the agents
+     after it.
+  3. All agents still travelling move one edge.
 Agents re-plan every step; only the first edge of a plan is ever committed.
 """
 
@@ -68,48 +76,63 @@ class Simulation:
     def step(self):
         graph = self.network.graph
 
-        # 1. Plans on empty-road costs; announce the whole route.
+        # 1. Every agent announces its whole route: edges crossed so far plus,
+        #    if still travelling, its cheapest remaining path on empty-road costs.
         free_flow_costs = {(u, v): data["edge"].cost(flow=0) for u, v, data in graph.edges(data=True)}
         intentions = []
         for agent in self.agents:
-            if agent.arrived:
-                continue
-            route = self.routing.choose_path(agent, graph, free_flow_costs, depth=self.depth_for(agent))
+            route = list(agent.route_history)
+            if not agent.arrived:
+                plan = self.routing.choose_path(agent, graph, free_flow_costs, depth=self.depth_for(agent))
+                route += plan[1:]
             intentions.append({"agent": agent, "route": route})
+        travelling = [item for item in intentions if not item["agent"].arrived]
 
-        # 2. An exact share of agents (rounded to the nearest agent) reviews its plan.
-        #    Everyone sees the original announcements, not other agents' revisions.
-        review_count = int(len(intentions) * self.revision_percentage / 100 + 0.5)
-        reviewers = {id(item) for item in self.rng.sample(intentions, review_count)}
-        moves = []
-        for intention in intentions:
+        # 2. An exact share of travelling agents (rounded to the nearest agent)
+        #    reviews its plan. Agents decide one at a time, in a new random order
+        #    every step; a reviewer's new route replaces its announcement, so
+        #    agents later in the order see it instead of the original.
+        review_count = int(len(travelling) * self.revision_percentage / 100 + 0.5)
+        reviewers = {id(item) for item in self.rng.sample(travelling, review_count)}
+        order = list(travelling)
+        self.rng.shuffle(order)
+        for intention in order:
             agent = intention["agent"]
             if id(intention) not in reviewers:
-                route = intention["route"]
-            else:
-                model = InformationModel(agent.alpha, rng=self.rng)
-                observed = model.observe_routes(intentions, agent=agent)
+                continue
+            model = InformationModel(agent.alpha, rng=self.rng)
+            observed = model.observe_routes(intentions, agent=agent)
+            perceived = {
+                # Others expected on the edge over the whole run, plus this agent.
+                (u, v): data["edge"].cost(flow=model.estimate_load(observed, (u, v)) + 1)
+                for u, v, data in graph.edges(data=True)
+            }
+            plan = self.routing.choose_path(agent, graph, perceived, depth=self.depth_for(agent))
+            intention["route"] = list(agent.route_history) + plan[1:]
 
-                def timed_cost(u, v, j):
-                    # Others expected on (u, v) j steps from now, plus this agent.
-                    return self.network.get_edge(u, v).cost(flow=model.estimate_load(observed, (u, v), j) + 1)
-
-                route = self.routing.choose_timed_path(agent, graph, timed_cost, depth=self.depth_for(agent))
-            moves.append((agent, route[0], route[1]))
-
-        # 3. Everyone moves at once; each edge is costed at its flow this step.
-        flows = Counter((source, target) for _, source, target in moves)
-        for u, v, data in graph.edges(data=True):
-            data["edge"].flow = flows[(u, v)]
-        for agent, source, target in moves:
-            agent.move(target, self.network.get_edge(source, target).cost())
+        # 3. Everyone still travelling moves one edge along its route.
+        for intention in travelling:
+            agent = intention["agent"]
+            agent.move(intention["route"][len(agent.route_history)])
         self.timestep += 1
+
+    def settle_costs(self):
+        """Load every edge with the agents whose route uses it, then charge each
+        agent the cost of every edge on its route."""
+        loads = Counter(edge for agent in self.agents
+                        for edge in zip(agent.route_history, agent.route_history[1:]))
+        for u, v, data in self.network.graph.edges(data=True):
+            data["edge"].flow = loads[(u, v)]
+        for agent in self.agents:
+            agent.total_cost = sum(self.network.get_edge(u, v).cost()
+                                   for u, v in zip(agent.route_history, agent.route_history[1:]))
 
     def run_until_complete(self, max_steps=10000):
         if max_steps < 0:
             raise ValueError("max_steps must be nonnegative")
         while self.timestep < max_steps and not self.all_agents_arrived():
             self.step()
+        self.settle_costs()
         return self.results()
 
     def results(self):

@@ -6,13 +6,13 @@ Please make a new branch for any new feature, ideally named `category/feature` (
 
 ## Model
 
-Each scenario has N = 50 agents travelling from origins to destinations on a directed graph. An edge costs `a + b·x`, where x is the number of agents crossing it in the same step. Every step:
+Each scenario has N = 50 agents travelling from origins to destinations on a directed graph. Congestion counts the **whole run**: an edge costs `a + b·x`, where x is the number of agents whose route uses that edge at any point, and each agent pays the cost of every edge on its final route once the run ends. This is the same model as the Wardrop and optimum benchmarks. Every step:
 
-1. Each agent still travelling plans its cheapest path on empty-road costs and announces the **whole route, with timing**: the j-th edge of its route is crossed j steps from now.
-2. Each agent sees every other agent's whole route independently with probability **α**. For every edge and every future step, it estimates the load as (routes seen crossing that edge at that step) / α, adds itself, and re-plans its cheapest path through time.
-3. All agents move one edge at the same time and pay the edge's cost at that step's load.
+1. Every agent announces its **whole route**: the edges it has crossed so far plus its cheapest remaining path on empty-road costs. Agents that have arrived announce the route they took.
+2. Agents still travelling decide **one at a time, in a new random order every step**. When its turn comes, an agent sees every other agent's whole route independently with probability **α**: the revised route for agents that have already decided this step, the announcement for the rest. It estimates each edge's load as (routes seen using that edge) / α, adds itself, and re-plans its cheapest remaining path. Its new route replaces its announcement for the agents after it.
+3. All agents still travelling move one edge.
 
-Agents re-plan every step, so only the first edge of any plan is committed. Everyone sees the original announcements, not other agents' revised plans. (The `simplified` branch has the same model with next-edge announcements instead.)
+Agents re-plan every step, so only the first edge of any plan is committed. (The `simplified` branch has next-edge announcements with simultaneous decisions, and `simplified_announcing_routes` has timed whole-route announcements with simultaneous decisions. In both, agents only congest each other when they cross an edge in the same step.)
 
 Agents only move forwards: they never step to a node closer (in hops) to their own origin and never revisit a node. Set `"forward_only": false` in `config.json` to turn this off. `revision_percentage` in `config.json` sets the share of agents that re-plan in step 2 (100 in every scenario).
 
@@ -28,7 +28,7 @@ Each network's congestion slopes are set at or near its worst-case price of anar
 | `grid` | 3×3 grid, edges `≈1 + 0.02x` (small offsets 0.01–0.11), free edge 2→3 | 5.193 | 5.131 | 1.012 |
 | `sioux_falls` | Real Sioux Falls network: the 28 short links cost `0.5x`, the other 48 links their free-flow time (4–10) | 25.618 | 23.892 | 1.072 |
 
-The benchmarks are static (all agents on the network at once). The simulation can beat the social optimum, because agents only congest each other within the same step.
+The simulation uses the same whole-run congestion as the benchmarks, so its cost per agent can be compared with them directly. Small differences remain because the simulation has whole agents and draws each agent's origin–destination pair at random, while the benchmarks spread the demand evenly over the pairs as a continuous flow.
 
 Sioux Falls origins are nodes 1, 2, 3 and destinations 19, 20, 22, with agents spread over those pairs. Source data: Transportation Networks for Research Core Team, *Transportation Networks for Research*, https://github.com/bstabler/TransportationNetworks (copies in `scenarios/sioux_falls/source/`). The data is for academic research use and must be cited in any publication that uses it.
 

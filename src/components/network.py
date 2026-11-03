@@ -5,7 +5,7 @@ import networkx as nx
 
 @dataclass
 class Edge:
-    """Linear edge: cost = a + b * flow (flow = agents on the edge in the same step)."""
+    """Linear edge: cost = a + b * flow (flow = agents whose route uses the edge)."""
     source: int
     target: int
     a: float

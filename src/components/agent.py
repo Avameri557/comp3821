@@ -21,10 +21,9 @@ class Agent:
         self.route_history = [self.origin]
         self.arrived = self.origin == self.destination
 
-    def move(self, next_node: int, cost: float):
+    def move(self, next_node: int):
         self.current_node = next_node
         self.route_history.append(next_node)
-        self.total_cost += cost
         if self.current_node == self.destination:
             self.arrived = True
 
@@ -39,9 +38,10 @@ class InformationModel:
         self.rng = rng if rng is not None else random.Random()
 
     def observe_routes(self, intentions, agent=None):
-        """Count K[(edge, j)]: other agents seen planning to cross `edge` j steps from now.
+        """Count K[edge]: other agents seen with `edge` on their route.
 
-        Each other agent's whole announced route is seen independently with probability alpha.
+        Each other agent's whole route (the edges it has crossed plus its
+        current plan) is seen independently with probability alpha.
         """
         observed = {}
         for intention in intentions:
@@ -49,10 +49,10 @@ class InformationModel:
                 continue
             if self.rng.random() < self.alpha:
                 route = intention["route"]
-                for j, edge in enumerate(zip(route, route[1:])):
-                    observed[(edge, j)] = observed.get((edge, j), 0) + 1
+                for edge in zip(route, route[1:]):
+                    observed[edge] = observed.get(edge, 0) + 1
         return observed
 
-    def estimate_load(self, observed, edge, j):
-        """Estimated number of *other* agents crossing `edge` j steps from now: K / alpha (unbiased)."""
-        return observed.get((edge, j), 0) / self.alpha if self.alpha else 0.0
+    def estimate_load(self, observed, edge):
+        """Estimated number of *other* agents using `edge`: K / alpha (unbiased)."""
+        return observed.get(edge, 0) / self.alpha if self.alpha else 0.0
