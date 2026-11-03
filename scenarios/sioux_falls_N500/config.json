@@ -1,7 +1,0 @@
-{
-  "max_timesteps": 200,
-  "record_history": true,
-  "seed": 42,
-  "revision_percentage": 100,
-  "forward_only": true
-}

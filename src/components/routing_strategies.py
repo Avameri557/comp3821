@@ -1,5 +1,6 @@
 import networkx as nx
 
+
 class SelfishRouting:
     def choose_next_node(self, agent, network, perceived_costs, depth=None):
         """First node of the cheapest path to the agent's destination.
@@ -23,11 +24,5 @@ class SelfishRouting:
                     return None  # networkx treats None as "edge not usable"
                 return perceived_costs[(u, v)]
 
-        path = nx.shortest_path(
-            network,
-            source=agent.current_node,
-            target=agent.destination,
-            weight=weight,
-        )
-
+        path = nx.shortest_path(network, source=agent.current_node, target=agent.destination, weight=weight)
         return path[1] if len(path) > 1 else None

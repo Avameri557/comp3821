@@ -6,8 +6,5 @@ channels:
 dependencies:
   - python=3.13
   - numpy
-  - pandas
   - matplotlib
   - networkx
-  - jupyterlab
-  - pytest
