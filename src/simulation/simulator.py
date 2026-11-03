@@ -7,9 +7,10 @@ of every edge on its final route, worked out once the run ends (the same
 model as the Wardrop and optimum benchmarks).
 
 Every step:
-  1. Each agent announces its whole route: the edges it has crossed so far
-     plus its cheapest remaining path on empty-road costs. Agents that have
-     arrived announce the route they took.
+  1. Each agent announces its current route: the whole route it chose last
+     step, including the edges it has already crossed. Before an agent's
+     first decision, that is its cheapest path on empty-road costs. Agents
+     that have arrived announce the route they took.
   2. Agents still travelling decide one at a time, in a new random order every
      step. A share of them (revision_percentage) reviews its plan: a reviewing
      agent sees each other agent's whole route with probability alpha (the
@@ -47,6 +48,8 @@ class Simulation:
         # own origin than where they are, and never back to a visited node.
         self.forward_only = forward_only
         self._depth_from = {}
+        # Each agent's most recently chosen route (from its origin), announced every step.
+        self.current_routes = {}
         self.rng = random.Random(seed)
         self._validate()
 
@@ -76,16 +79,17 @@ class Simulation:
     def step(self):
         graph = self.network.graph
 
-        # 1. Every agent announces its whole route: edges crossed so far plus,
-        #    if still travelling, its cheapest remaining path on empty-road costs.
+        # 1. Every agent announces its current route: the route it chose last
+        #    step (which starts with the edges it has crossed). Before an agent's
+        #    first decision, that is its cheapest path on empty-road costs.
         free_flow_costs = {(u, v): data["edge"].cost(flow=0) for u, v, data in graph.edges(data=True)}
         intentions = []
         for agent in self.agents:
-            route = list(agent.route_history)
-            if not agent.arrived:
-                plan = self.routing.choose_path(agent, graph, free_flow_costs, depth=self.depth_for(agent))
-                route += plan[1:]
-            intentions.append({"agent": agent, "route": route})
+            route = self.current_routes.get(agent.agent_id)
+            if route is None:
+                route = (list(agent.route_history) if agent.arrived else
+                         self.routing.choose_path(agent, graph, free_flow_costs, depth=self.depth_for(agent)))
+            intentions.append({"agent": agent, "route": list(route)})
         travelling = [item for item in intentions if not item["agent"].arrived]
 
         # 2. An exact share of travelling agents (rounded to the nearest agent)
@@ -110,10 +114,12 @@ class Simulation:
             plan = self.routing.choose_path(agent, graph, perceived, depth=self.depth_for(agent))
             intention["route"] = list(agent.route_history) + plan[1:]
 
-        # 3. Everyone still travelling moves one edge along its route.
+        # 3. Everyone still travelling moves one edge along its route; the route
+        #    is kept as its announcement for the next step.
         for intention in travelling:
             agent = intention["agent"]
             agent.move(intention["route"][len(agent.route_history)])
+            self.current_routes[agent.agent_id] = intention["route"]
         self.timestep += 1
 
     def settle_costs(self):

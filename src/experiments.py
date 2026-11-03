@@ -1,13 +1,15 @@
 """
-The three tests, run on every network, with one chart per network per test.
+The four tests, run on every network, with one chart per network per test.
 
-    symmetric        every agent has the same alpha, swept from 0 to 1
-    others_rising    one random agent (the "informed agent") is held at alpha = 1
-                     while every other agent's alpha is swept from 0 to 1
-    informed_rising  every other agent is held at alpha = 0 while the
-                     informed agent's alpha is swept from 0 to 1
+    symmetric             every agent has the same alpha, swept from 0 to 1
+    others_rising         one random agent (the "informed agent") is held at
+                          alpha = 1 while every other agent's alpha is swept from 0 to 1
+    informed_rising       every other agent is held at alpha = 0 while the
+                          informed agent's alpha is swept from 0 to 1
+    informed_rising_half  every other agent is held at alpha = 0.5 while the
+                          informed agent's alpha is swept from 0 to 1
 
-Each point is the mean over --trials trials (default 50). Trial t uses seed
+Each point is the mean over --trials trials (default 200). Trial t uses seed
 3821 + t at every alpha, so the points along a line differ only in
 information. The informed agent is a random agent in each trial (the same
 agent at every alpha).
@@ -46,7 +48,9 @@ NETWORKS = {
     "grid": "Grid",
     "sioux_falls": "Sioux Falls",
 }
-TESTS = ("symmetric", "others_rising", "informed_rising")
+TESTS = ("symmetric", "others_rising", "informed_rising", "informed_rising_half")
+# Fixed alpha of the other agents in the tests that sweep the informed agent.
+OTHERS_ALPHA = {"informed_rising": 0.0, "informed_rising_half": 0.5}
 SCENARIOS = Path("scenarios")
 RESULTS = Path("results")
 BASE_SEED = 3821
@@ -72,8 +76,8 @@ def run_one(scenario, seed, test, alpha):
             agent.alpha = alpha
         elif test == "others_rising":
             agent.alpha = 1.0 if agent is informed else alpha
-        else:  # informed_rising
-            agent.alpha = alpha if agent is informed else 0.0
+        else:  # informed_rising, informed_rising_half
+            agent.alpha = alpha if agent is informed else OTHERS_ALPHA[test]
     result = simulation.run_until_complete(config.get("max_timesteps", 100))
     return result["completed"], result["average_cost"], informed.total_cost
 
@@ -150,10 +154,12 @@ X_LABELS = {
     "symmetric": r"$\alpha$ of every agent",
     "others_rising": r"$\alpha$ of the other agents",
     "informed_rising": r"$\alpha$ of the informed agent",
+    "informed_rising_half": r"$\alpha$ of the informed agent",
 }
 INFORMED_LABELS = {
     "others_rising": r"Informed agent ($\alpha = 1$)",
     "informed_rising": "Informed agent (others at $\\alpha = 0$)",
+    "informed_rising_half": "Informed agent (others at $\\alpha = 0.5$)",
 }
 
 
@@ -181,21 +187,23 @@ def chart_style():
 
 
 def plot_network(network, results_dir):
-    """One chart per test for a network, all on the same y-axis range."""
+    """One chart per test for a network, each with its y-axis fitted to its own data."""
     plt = chart_style()
     data = {test: read_csv(results_dir / network / f"{test}.csv")
             for test in TESTS if (results_dir / network / f"{test}.csv").exists()}
     if not data:
         return []
-    values = []
-    for rows in data.values():
+    def y_range(rows):
+        """Fit the y-axis to this chart's lines, bands and benchmark lines, plus a small margin."""
+        values = []
         for row in rows:
             values += [row["wardrop_per_agent"], row["optimum_per_agent"]]
             for key in ("mean_cost_per_agent", "informed_agent_cost"):
                 if key in row:
                     values += [row[key] - row[f"{key}_ci95"], row[key] + row[f"{key}_ci95"]]
-    low, high = min(values), max(values)
-    pad = 0.08 * (high - low or 1)
+        low, high = min(values), max(values)
+        pad = 0.06 * (high - low) if high > low else 0.05 * (abs(high) or 1)
+        return low - pad, high + pad
 
     def line(ax, xs, rows, key, colour, marker, label):
         """Mean with a shaded 95% confidence band."""
@@ -217,7 +225,7 @@ def plot_network(network, results_dir):
         ax.axhline(rows[0]["optimum_per_agent"], color=COLOURS["optimum"], ls=":", lw=1.4,
                    label="Social optimum", zorder=2)
         ax.set_xlim(-0.02, 1.02)
-        ax.set_ylim(low - pad, high + pad)
+        ax.set_ylim(*y_range(rows))
         ax.set_xlabel(X_LABELS[test])
         ax.set_ylabel("Mean cost per agent")
         ax.set_title(NETWORKS[network])
@@ -239,7 +247,7 @@ def main():
                         help="Network to run (repeatable). Default: all")
     parser.add_argument("--test", action="append", choices=TESTS, help="Test to run (repeatable). Default: all")
     parser.add_argument("--step", type=float, default=0.05, help="Spacing of the alpha values")
-    parser.add_argument("--trials", type=int, default=50, help="Trials per point")
+    parser.add_argument("--trials", type=int, default=200, help="Trials per point")
     parser.add_argument("--workers", type=int, default=os.cpu_count())
     parser.add_argument("--output", type=Path, default=RESULTS)
     parser.add_argument("--plot-only", action="store_true", help="Redraw the charts from existing CSVs")

@@ -8,7 +8,7 @@ Please make a new branch for any new feature, ideally named `category/feature` (
 
 Each scenario has N = 50 agents travelling from origins to destinations on a directed graph. Congestion counts the **whole run**: an edge costs `a + b·x`, where x is the number of agents whose route uses that edge at any point, and each agent pays the cost of every edge on its final route once the run ends. This is the same model as the Wardrop and optimum benchmarks. Every step:
 
-1. Every agent announces its **whole route**: the edges it has crossed so far plus its cheapest remaining path on empty-road costs. Agents that have arrived announce the route they took.
+1. Every agent announces its **current route**: the whole route it chose most recently, including the edges it has already crossed. Before an agent's first decision, that is its cheapest path on empty-road costs. Agents that have arrived announce the route they took.
 2. Agents still travelling decide **one at a time, in a new random order every step**. When its turn comes, an agent sees every other agent's whole route independently with probability **α**: the revised route for agents that have already decided this step, the announcement for the rest. It estimates each edge's load as (routes seen using that edge) / α, adds itself, and re-plans its cheapest remaining path. Its new route replaces its announcement for the agents after it.
 3. All agents still travelling move one edge.
 
@@ -39,16 +39,17 @@ Sioux Falls origins are nodes 1, 2, 3 and destinations 19, 20, 22, with agents s
 | `symmetric` | every agent's α, 0 → 1 | mean cost per agent |
 | `others_rising` | one random "informed agent" held at α = 1; every other agent's α 0 → 1 | mean cost per agent, informed agent's cost |
 | `informed_rising` | every other agent held at α = 0; the informed agent's α 0 → 1 | mean cost per agent, informed agent's cost |
+| `informed_rising_half` | every other agent held at α = 0.5; the informed agent's α 0 → 1 | mean cost per agent, informed agent's cost |
 
-Each line has a shaded 95% confidence band. Every chart also shows the Wardrop equilibrium and social optimum cost per agent. The three charts for a network share one y-axis range.
+Each line has a shaded 95% confidence band. Every chart also shows the Wardrop equilibrium and social optimum cost per agent. Each chart's y-axis is fitted to its own lines, bands and reference lines.
 
 ```
-python -m src.experiments                                    # all networks, all tests
+python -m src.experiments                                    # all networks, all four tests
 python -m src.experiments --network braess --test symmetric  # one chart
 python -m src.experiments --plot-only                        # redraw charts from the CSVs
 ```
 
-α runs from 0 to 1 in steps of 0.05 (`--step`). Each point averages 50 trials (`--trials`). Trial t uses seed 3821 + t at every α, so points along a line differ only in information.
+α runs from 0 to 1 in steps of 0.05 (`--step`). Each point averages 200 trials (`--trials`). Trial t uses seed 3821 + t at every α, so points along a line differ only in information.
 
 Output in `results/`:
 
@@ -79,7 +80,7 @@ scenarios/<network>/      network.json, agents.json, config.json
 src/components/           agents, edges, routing
 src/simulation/           simulator and scenario loader
 src/benchmarks/           Wardrop equilibrium and social optimum
-src/experiments.py        the three tests and their charts
+src/experiments.py        the four tests and their charts
 diagrams/                 TikZ sources, build script and PNGs
 results/                  test output
 ```
