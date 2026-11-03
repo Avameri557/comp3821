@@ -1,0 +1,18 @@
+% Shared preamble for the social optimum derivations. Compile from this folder:
+%   pdflatex pigou.tex   (the network diagrams are read from ../diagrams)
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{float}
+\usepackage{parskip}
+\usepackage[font=small,labelfont=bf]{caption}
+\usepackage[hyphens]{url}
+\usepackage{standalone}
+\input{../diagrams/common}
+
+\newcommand{\SCopt}{SC_{\mathrm{opt}}}
+% Repository file or folder, e.g. \file{results/grid/summary.csv}; breaks at slashes.
+\DeclareRobustCommand{\file}[1]{\path{#1}}

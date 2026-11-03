@@ -27,7 +27,7 @@
       {
         "source": 1,
         "target": 2,
-        "flow": 20
+        "flow": 80
       }
     ],
     "decisions": [
@@ -46,8 +46,8 @@
         "initial_target": 2,
         "reassessed": false,
         "review_eligible": true,
-        "perceived_cost": 0.05,
-        "actual_cost": 0.4
+        "perceived_cost": 0.02,
+        "actual_cost": 0.5
       },
       {
         "agent_id": 2,
@@ -55,26 +55,26 @@
         "initial_target": 2,
         "reassessed": false,
         "review_eligible": true,
-        "perceived_cost": 0.05,
-        "actual_cost": 0.4
+        "perceived_cost": 0.8200000000000001,
+        "actual_cost": 0.5
       },
       {
         "agent_id": 3,
         "source": 1,
         "initial_target": 2,
-        "reassessed": false,
+        "reassessed": true,
         "review_eligible": true,
-        "perceived_cost": 0.05,
-        "actual_cost": 0.4
+        "perceived_cost": 1.0,
+        "actual_cost": 1
       },
       {
         "agent_id": 4,
         "source": 1,
         "initial_target": 2,
-        "reassessed": false,
+        "reassessed": true,
         "review_eligible": true,
-        "perceived_cost": 0.05,
-        "actual_cost": 0.4
+        "perceived_cost": 1.0,
+        "actual_cost": 1
       },
       {
         "agent_id": 5,
@@ -89,19 +89,19 @@
         "agent_id": 6,
         "source": 1,
         "initial_target": 2,
-        "reassessed": false,
+        "reassessed": true,
         "review_eligible": true,
-        "perceived_cost": 0.05,
-        "actual_cost": 0.4
+        "perceived_cost": 1.0,
+        "actual_cost": 1
       },
       {
         "agent_id": 7,
         "source": 1,
         "initial_target": 2,
-        "reassessed": true,
+        "reassessed": false,
         "review_eligible": true,
-        "perceived_cost": 1.0,
-        "actual_cost": 1
+        "perceived_cost": 0.8200000000000001,
+        "actual_cost": 0.5
       },
       {
         "agent_id": 8,
@@ -109,17 +109,17 @@
         "initial_target": 2,
         "reassessed": false,
         "review_eligible": true,
-        "perceived_cost": 0.05,
-        "actual_cost": 0.4
+        "perceived_cost": 0.8200000000000001,
+        "actual_cost": 0.5
       },
       {
         "agent_id": 9,
         "source": 1,
         "initial_target": 2,
-        "reassessed": true,
+        "reassessed": false,
         "review_eligible": true,
-        "perceived_cost": 1.0,
-        "actual_cost": 1
+        "perceived_cost": 0.8200000000000001,
+        "actual_cost": 0.5
       },
       {
         "agent_id": 10,
@@ -152,10 +152,10 @@
         "agent_id": 13,
         "source": 1,
         "initial_target": 2,
-        "reassessed": false,
+        "reassessed": true,
         "review_eligible": true,
-        "perceived_cost": 0.05,
-        "actual_cost": 0.4
+        "perceived_cost": 1.0,
+        "actual_cost": 1
       },
       {
         "agent_id": 14,
@@ -170,10 +170,10 @@
         "agent_id": 15,
         "source": 1,
         "initial_target": 2,
-        "reassessed": true,
+        "reassessed": false,
         "review_eligible": true,
-        "perceived_cost": 1.0,
-        "actual_cost": 1
+        "perceived_cost": 0.02,
+        "actual_cost": 0.5
       },
       {
         "agent_id": 16,
@@ -208,45 +208,646 @@
         "initial_target": 2,
         "reassessed": false,
         "review_eligible": true,
-        "perceived_cost": 0.05,
-        "actual_cost": 0.4
+        "perceived_cost": 0.8200000000000001,
+        "actual_cost": 0.5
+      },
+      {
+        "agent_id": 20,
+        "source": 1,
+        "initial_target": 2,
+        "reassessed": false,
+        "review_eligible": true,
+        "perceived_cost": 0.8200000000000001,
+        "actual_cost": 0.5
+      },
+      {
+        "agent_id": 21,
+        "source": 1,
+        "initial_target": 2,
+        "reassessed": true,
+        "review_eligible": true,
+        "perceived_cost": 1.0,
+        "actual_cost": 1
+      },
+      {
+        "agent_id": 22,
+        "source": 1,
+        "initial_target": 2,
+        "reassessed": true,
+        "review_eligible": true,
+        "perceived_cost": 1.0,
+        "actual_cost": 1
+      },
+      {
+        "agent_id": 23,
+        "source": 1,
+        "initial_target": 2,
+        "reassessed": false,
+        "review_eligible": true,
+        "perceived_cost": 0.8200000000000001,
+        "actual_cost": 0.5
+      },
+      {
+        "agent_id": 24,
+        "source": 1,
+        "initial_target": 2,
+        "reassessed": true,
+        "review_eligible": true,
+        "perceived_cost": 1.0,
+        "actual_cost": 1
+      },
+      {
+        "agent_id": 25,
+        "source": 1,
+        "initial_target": 2,
+        "reassessed": false,
+        "review_eligible": true,
+        "perceived_cost": 0.8200000000000001,
+        "actual_cost": 0.5
+      },
+      {
+        "agent_id": 26,
+        "source": 1,
+        "initial_target": 2,
+        "reassessed": true,
+        "review_eligible": true,
+        "perceived_cost": 1.0,
+        "actual_cost": 1
+      },
+      {
+        "agent_id": 27,
+        "source": 1,
+        "initial_target": 2,
+        "reassessed": true,
+        "review_eligible": true,
+        "perceived_cost": 1.0,
+        "actual_cost": 1
+      },
+      {
+        "agent_id": 28,
+        "source": 1,
+        "initial_target": 2,
+        "reassessed": true,
+        "review_eligible": true,
+        "perceived_cost": 1.0,
+        "actual_cost": 1
+      },
+      {
+        "agent_id": 29,
+        "source": 1,
+        "initial_target": 2,
+        "reassessed": false,
+        "review_eligible": true,
+        "perceived_cost": 0.8200000000000001,
+        "actual_cost": 0.5
+      },
+      {
+        "agent_id": 30,
+        "source": 1,
+        "initial_target": 2,
+        "reassessed": false,
+        "review_eligible": true,
+        "perceived_cost": 0.8200000000000001,
+        "actual_cost": 0.5
+      },
+      {
+        "agent_id": 31,
+        "source": 1,
+        "initial_target": 2,
+        "reassessed": true,
+        "review_eligible": true,
+        "perceived_cost": 1.0,
+        "actual_cost": 1
+      },
+      {
+        "agent_id": 32,
+        "source": 1,
+        "initial_target": 2,
+        "reassessed": true,
+        "review_eligible": true,
+        "perceived_cost": 1.0,
+        "actual_cost": 1
+      },
+      {
+        "agent_id": 33,
+        "source": 1,
+        "initial_target": 2,
+        "reassessed": true,
+        "review_eligible": true,
+        "perceived_cost": 1.0,
+        "actual_cost": 1
+      },
+      {
+        "agent_id": 34,
+        "source": 1,
+        "initial_target": 2,
+        "reassessed": true,
+        "review_eligible": true,
+        "perceived_cost": 1.0,
+        "actual_cost": 1
+      },
+      {
+        "agent_id": 35,
+        "source": 1,
+        "initial_target": 2,
+        "reassessed": true,
+        "review_eligible": true,
+        "perceived_cost": 1.0,
+        "actual_cost": 1
+      },
+      {
+        "agent_id": 36,
+        "source": 1,
+        "initial_target": 2,
+        "reassessed": true,
+        "review_eligible": true,
+        "perceived_cost": 1.0,
+        "actual_cost": 1
+      },
+      {
+        "agent_id": 37,
+        "source": 1,
+        "initial_target": 2,
+        "reassessed": true,
+        "review_eligible": true,
+        "perceived_cost": 1.0,
+        "actual_cost": 1
+      },
+      {
+        "agent_id": 38,
+        "source": 1,
+        "initial_target": 2,
+        "reassessed": false,
+        "review_eligible": true,
+        "perceived_cost": 0.8200000000000001,
+        "actual_cost": 0.5
+      },
+      {
+        "agent_id": 39,
+        "source": 1,
+        "initial_target": 2,
+        "reassessed": true,
+        "review_eligible": true,
+        "perceived_cost": 1.0,
+        "actual_cost": 1
+      },
+      {
+        "agent_id": 40,
+        "source": 1,
+        "initial_target": 2,
+        "reassessed": false,
+        "review_eligible": true,
+        "perceived_cost": 0.42,
+        "actual_cost": 0.5
+      },
+      {
+        "agent_id": 41,
+        "source": 1,
+        "initial_target": 2,
+        "reassessed": true,
+        "review_eligible": true,
+        "perceived_cost": 1.0,
+        "actual_cost": 1
+      },
+      {
+        "agent_id": 42,
+        "source": 1,
+        "initial_target": 2,
+        "reassessed": true,
+        "review_eligible": true,
+        "perceived_cost": 1.0,
+        "actual_cost": 1
+      },
+      {
+        "agent_id": 43,
+        "source": 1,
+        "initial_target": 2,
+        "reassessed": true,
+        "review_eligible": true,
+        "perceived_cost": 1.0,
+        "actual_cost": 1
+      },
+      {
+        "agent_id": 44,
+        "source": 1,
+        "initial_target": 2,
+        "reassessed": false,
+        "review_eligible": true,
+        "perceived_cost": 0.8200000000000001,
+        "actual_cost": 0.5
+      },
+      {
+        "agent_id": 45,
+        "source": 1,
+        "initial_target": 2,
+        "reassessed": true,
+        "review_eligible": true,
+        "perceived_cost": 1.0,
+        "actual_cost": 1
+      },
+      {
+        "agent_id": 46,
+        "source": 1,
+        "initial_target": 2,
+        "reassessed": true,
+        "review_eligible": true,
+        "perceived_cost": 1.0,
+        "actual_cost": 1
+      },
+      {
+        "agent_id": 47,
+        "source": 1,
+        "initial_target": 2,
+        "reassessed": false,
+        "review_eligible": true,
+        "perceived_cost": 0.8200000000000001,
+        "actual_cost": 0.5
+      },
+      {
+        "agent_id": 48,
+        "source": 1,
+        "initial_target": 2,
+        "reassessed": true,
+        "review_eligible": true,
+        "perceived_cost": 1.0,
+        "actual_cost": 1
+      },
+      {
+        "agent_id": 49,
+        "source": 1,
+        "initial_target": 2,
+        "reassessed": true,
+        "review_eligible": true,
+        "perceived_cost": 1.0,
+        "actual_cost": 1
+      },
+      {
+        "agent_id": 50,
+        "source": 1,
+        "initial_target": 2,
+        "reassessed": true,
+        "review_eligible": true,
+        "perceived_cost": 1.0,
+        "actual_cost": 1
+      },
+      {
+        "agent_id": 51,
+        "source": 1,
+        "initial_target": 2,
+        "reassessed": true,
+        "review_eligible": true,
+        "perceived_cost": 1.0,
+        "actual_cost": 1
+      },
+      {
+        "agent_id": 52,
+        "source": 1,
+        "initial_target": 2,
+        "reassessed": false,
+        "review_eligible": true,
+        "perceived_cost": 0.8200000000000001,
+        "actual_cost": 0.5
+      },
+      {
+        "agent_id": 53,
+        "source": 1,
+        "initial_target": 2,
+        "reassessed": true,
+        "review_eligible": true,
+        "perceived_cost": 1.0,
+        "actual_cost": 1
+      },
+      {
+        "agent_id": 54,
+        "source": 1,
+        "initial_target": 2,
+        "reassessed": true,
+        "review_eligible": true,
+        "perceived_cost": 1.0,
+        "actual_cost": 1
+      },
+      {
+        "agent_id": 55,
+        "source": 1,
+        "initial_target": 2,
+        "reassessed": true,
+        "review_eligible": true,
+        "perceived_cost": 1.0,
+        "actual_cost": 1
+      },
+      {
+        "agent_id": 56,
+        "source": 1,
+        "initial_target": 2,
+        "reassessed": true,
+        "review_eligible": true,
+        "perceived_cost": 1.0,
+        "actual_cost": 1
+      },
+      {
+        "agent_id": 57,
+        "source": 1,
+        "initial_target": 2,
+        "reassessed": false,
+        "review_eligible": true,
+        "perceived_cost": 0.8200000000000001,
+        "actual_cost": 0.5
+      },
+      {
+        "agent_id": 58,
+        "source": 1,
+        "initial_target": 2,
+        "reassessed": true,
+        "review_eligible": true,
+        "perceived_cost": 1.0,
+        "actual_cost": 1
+      },
+      {
+        "agent_id": 59,
+        "source": 1,
+        "initial_target": 2,
+        "reassessed": true,
+        "review_eligible": true,
+        "perceived_cost": 1.0,
+        "actual_cost": 1
+      },
+      {
+        "agent_id": 60,
+        "source": 1,
+        "initial_target": 2,
+        "reassessed": true,
+        "review_eligible": true,
+        "perceived_cost": 1.0,
+        "actual_cost": 1
+      },
+      {
+        "agent_id": 61,
+        "source": 1,
+        "initial_target": 2,
+        "reassessed": true,
+        "review_eligible": true,
+        "perceived_cost": 1.0,
+        "actual_cost": 1
+      },
+      {
+        "agent_id": 62,
+        "source": 1,
+        "initial_target": 2,
+        "reassessed": true,
+        "review_eligible": true,
+        "perceived_cost": 1.0,
+        "actual_cost": 1
+      },
+      {
+        "agent_id": 63,
+        "source": 1,
+        "initial_target": 2,
+        "reassessed": true,
+        "review_eligible": true,
+        "perceived_cost": 1.0,
+        "actual_cost": 1
+      },
+      {
+        "agent_id": 64,
+        "source": 1,
+        "initial_target": 2,
+        "reassessed": false,
+        "review_eligible": true,
+        "perceived_cost": 0.8200000000000001,
+        "actual_cost": 0.5
+      },
+      {
+        "agent_id": 65,
+        "source": 1,
+        "initial_target": 2,
+        "reassessed": false,
+        "review_eligible": true,
+        "perceived_cost": 0.8200000000000001,
+        "actual_cost": 0.5
+      },
+      {
+        "agent_id": 66,
+        "source": 1,
+        "initial_target": 2,
+        "reassessed": false,
+        "review_eligible": true,
+        "perceived_cost": 0.8200000000000001,
+        "actual_cost": 0.5
+      },
+      {
+        "agent_id": 67,
+        "source": 1,
+        "initial_target": 2,
+        "reassessed": true,
+        "review_eligible": true,
+        "perceived_cost": 1.0,
+        "actual_cost": 1
+      },
+      {
+        "agent_id": 68,
+        "source": 1,
+        "initial_target": 2,
+        "reassessed": false,
+        "review_eligible": true,
+        "perceived_cost": 0.8200000000000001,
+        "actual_cost": 0.5
+      },
+      {
+        "agent_id": 69,
+        "source": 1,
+        "initial_target": 2,
+        "reassessed": true,
+        "review_eligible": true,
+        "perceived_cost": 1.0,
+        "actual_cost": 1
+      },
+      {
+        "agent_id": 70,
+        "source": 1,
+        "initial_target": 2,
+        "reassessed": true,
+        "review_eligible": true,
+        "perceived_cost": 1.0,
+        "actual_cost": 1
+      },
+      {
+        "agent_id": 71,
+        "source": 1,
+        "initial_target": 2,
+        "reassessed": true,
+        "review_eligible": true,
+        "perceived_cost": 1.0,
+        "actual_cost": 1
+      },
+      {
+        "agent_id": 72,
+        "source": 1,
+        "initial_target": 2,
+        "reassessed": false,
+        "review_eligible": true,
+        "perceived_cost": 0.42,
+        "actual_cost": 0.5
+      },
+      {
+        "agent_id": 73,
+        "source": 1,
+        "initial_target": 2,
+        "reassessed": true,
+        "review_eligible": true,
+        "perceived_cost": 1.0,
+        "actual_cost": 1
+      },
+      {
+        "agent_id": 74,
+        "source": 1,
+        "initial_target": 2,
+        "reassessed": true,
+        "review_eligible": true,
+        "perceived_cost": 1.0,
+        "actual_cost": 1
+      },
+      {
+        "agent_id": 75,
+        "source": 1,
+        "initial_target": 2,
+        "reassessed": false,
+        "review_eligible": true,
+        "perceived_cost": 0.8200000000000001,
+        "actual_cost": 0.5
+      },
+      {
+        "agent_id": 76,
+        "source": 1,
+        "initial_target": 2,
+        "reassessed": true,
+        "review_eligible": true,
+        "perceived_cost": 1.0,
+        "actual_cost": 1
+      },
+      {
+        "agent_id": 77,
+        "source": 1,
+        "initial_target": 2,
+        "reassessed": false,
+        "review_eligible": true,
+        "perceived_cost": 0.8200000000000001,
+        "actual_cost": 0.5
+      },
+      {
+        "agent_id": 78,
+        "source": 1,
+        "initial_target": 2,
+        "reassessed": true,
+        "review_eligible": true,
+        "perceived_cost": 1.0,
+        "actual_cost": 1
+      },
+      {
+        "agent_id": 79,
+        "source": 1,
+        "initial_target": 2,
+        "reassessed": true,
+        "review_eligible": true,
+        "perceived_cost": 1.0,
+        "actual_cost": 1
       }
     ],
     "new_flows": [
       {
         "source": 1,
         "target": 3,
-        "flow": 12
+        "flow": 55
       },
       {
         "source": 1,
         "target": 2,
-        "flow": 8
+        "flow": 25
       }
     ],
     "positions": {
       "0": 3,
       "1": 2,
       "2": 2,
-      "3": 2,
-      "4": 2,
+      "3": 3,
+      "4": 3,
       "5": 3,
-      "6": 2,
-      "7": 3,
+      "6": 3,
+      "7": 2,
       "8": 2,
-      "9": 3,
+      "9": 2,
       "10": 3,
       "11": 3,
       "12": 3,
-      "13": 2,
+      "13": 3,
       "14": 3,
-      "15": 3,
+      "15": 2,
       "16": 3,
       "17": 3,
       "18": 3,
-      "19": 2
+      "19": 2,
+      "20": 2,
+      "21": 3,
+      "22": 3,
+      "23": 2,
+      "24": 3,
+      "25": 2,
+      "26": 3,
+      "27": 3,
+      "28": 3,
+      "29": 2,
+      "30": 2,
+      "31": 3,
+      "32": 3,
+      "33": 3,
+      "34": 3,
+      "35": 3,
+      "36": 3,
+      "37": 3,
+      "38": 2,
+      "39": 3,
+      "40": 2,
+      "41": 3,
+      "42": 3,
+      "43": 3,
+      "44": 2,
+      "45": 3,
+      "46": 3,
+      "47": 2,
+      "48": 3,
+      "49": 3,
+      "50": 3,
+      "51": 3,
+      "52": 2,
+      "53": 3,
+      "54": 3,
+      "55": 3,
+      "56": 3,
+      "57": 2,
+      "58": 3,
+      "59": 3,
+      "60": 3,
+      "61": 3,
+      "62": 3,
+      "63": 3,
+      "64": 2,
+      "65": 2,
+      "66": 2,
+      "67": 3,
+      "68": 2,
+      "69": 3,
+      "70": 3,
+      "71": 3,
+      "72": 2,
+      "73": 3,
+      "74": 3,
+      "75": 2,
+      "76": 3,
+      "77": 2,
+      "78": 3,
+      "79": 3
     },
-    "total_cost": 15.2
+    "active_count": 80,
+    "total_cost": 67.5
   },
   {
     "timestep": 1,
@@ -254,12 +855,12 @@
       {
         "source": 1,
         "target": 2,
-        "flow": 8
+        "flow": 25
       },
       {
         "source": 1,
         "target": 3,
-        "flow": 12
+        "flow": 55
       },
       {
         "source": 2,
@@ -276,12 +877,12 @@
       {
         "source": 3,
         "target": 4,
-        "flow": 12
+        "flow": 55
       },
       {
         "source": 2,
         "target": 4,
-        "flow": 8
+        "flow": 25
       }
     ],
     "decisions": [
@@ -314,7 +915,7 @@
       },
       {
         "agent_id": 3,
-        "source": 2,
+        "source": 3,
         "initial_target": 4,
         "reassessed": false,
         "review_eligible": true,
@@ -323,7 +924,7 @@
       },
       {
         "agent_id": 4,
-        "source": 2,
+        "source": 3,
         "initial_target": 4,
         "reassessed": false,
         "review_eligible": true,
@@ -341,7 +942,7 @@
       },
       {
         "agent_id": 6,
-        "source": 2,
+        "source": 3,
         "initial_target": 4,
         "reassessed": false,
         "review_eligible": true,
@@ -350,7 +951,7 @@
       },
       {
         "agent_id": 7,
-        "source": 3,
+        "source": 2,
         "initial_target": 4,
         "reassessed": false,
         "review_eligible": true,
@@ -368,7 +969,7 @@
       },
       {
         "agent_id": 9,
-        "source": 3,
+        "source": 2,
         "initial_target": 4,
         "reassessed": false,
         "review_eligible": true,
@@ -404,7 +1005,7 @@
       },
       {
         "agent_id": 13,
-        "source": 2,
+        "source": 3,
         "initial_target": 4,
         "reassessed": false,
         "review_eligible": true,
@@ -422,7 +1023,7 @@
       },
       {
         "agent_id": 15,
-        "source": 3,
+        "source": 2,
         "initial_target": 4,
         "reassessed": false,
         "review_eligible": true,
@@ -464,18 +1065,558 @@
         "review_eligible": true,
         "perceived_cost": 0.0,
         "actual_cost": 0
+      },
+      {
+        "agent_id": 20,
+        "source": 2,
+        "initial_target": 4,
+        "reassessed": false,
+        "review_eligible": true,
+        "perceived_cost": 0.0,
+        "actual_cost": 0
+      },
+      {
+        "agent_id": 21,
+        "source": 3,
+        "initial_target": 4,
+        "reassessed": false,
+        "review_eligible": true,
+        "perceived_cost": 0.0,
+        "actual_cost": 0
+      },
+      {
+        "agent_id": 22,
+        "source": 3,
+        "initial_target": 4,
+        "reassessed": false,
+        "review_eligible": true,
+        "perceived_cost": 0.0,
+        "actual_cost": 0
+      },
+      {
+        "agent_id": 23,
+        "source": 2,
+        "initial_target": 4,
+        "reassessed": false,
+        "review_eligible": true,
+        "perceived_cost": 0.0,
+        "actual_cost": 0
+      },
+      {
+        "agent_id": 24,
+        "source": 3,
+        "initial_target": 4,
+        "reassessed": false,
+        "review_eligible": true,
+        "perceived_cost": 0.0,
+        "actual_cost": 0
+      },
+      {
+        "agent_id": 25,
+        "source": 2,
+        "initial_target": 4,
+        "reassessed": false,
+        "review_eligible": true,
+        "perceived_cost": 0.0,
+        "actual_cost": 0
+      },
+      {
+        "agent_id": 26,
+        "source": 3,
+        "initial_target": 4,
+        "reassessed": false,
+        "review_eligible": true,
+        "perceived_cost": 0.0,
+        "actual_cost": 0
+      },
+      {
+        "agent_id": 27,
+        "source": 3,
+        "initial_target": 4,
+        "reassessed": false,
+        "review_eligible": true,
+        "perceived_cost": 0.0,
+        "actual_cost": 0
+      },
+      {
+        "agent_id": 28,
+        "source": 3,
+        "initial_target": 4,
+        "reassessed": false,
+        "review_eligible": true,
+        "perceived_cost": 0.0,
+        "actual_cost": 0
+      },
+      {
+        "agent_id": 29,
+        "source": 2,
+        "initial_target": 4,
+        "reassessed": false,
+        "review_eligible": true,
+        "perceived_cost": 0.0,
+        "actual_cost": 0
+      },
+      {
+        "agent_id": 30,
+        "source": 2,
+        "initial_target": 4,
+        "reassessed": false,
+        "review_eligible": true,
+        "perceived_cost": 0.0,
+        "actual_cost": 0
+      },
+      {
+        "agent_id": 31,
+        "source": 3,
+        "initial_target": 4,
+        "reassessed": false,
+        "review_eligible": true,
+        "perceived_cost": 0.0,
+        "actual_cost": 0
+      },
+      {
+        "agent_id": 32,
+        "source": 3,
+        "initial_target": 4,
+        "reassessed": false,
+        "review_eligible": true,
+        "perceived_cost": 0.0,
+        "actual_cost": 0
+      },
+      {
+        "agent_id": 33,
+        "source": 3,
+        "initial_target": 4,
+        "reassessed": false,
+        "review_eligible": true,
+        "perceived_cost": 0.0,
+        "actual_cost": 0
+      },
+      {
+        "agent_id": 34,
+        "source": 3,
+        "initial_target": 4,
+        "reassessed": false,
+        "review_eligible": true,
+        "perceived_cost": 0.0,
+        "actual_cost": 0
+      },
+      {
+        "agent_id": 35,
+        "source": 3,
+        "initial_target": 4,
+        "reassessed": false,
+        "review_eligible": true,
+        "perceived_cost": 0.0,
+        "actual_cost": 0
+      },
+      {
+        "agent_id": 36,
+        "source": 3,
+        "initial_target": 4,
+        "reassessed": false,
+        "review_eligible": true,
+        "perceived_cost": 0.0,
+        "actual_cost": 0
+      },
+      {
+        "agent_id": 37,
+        "source": 3,
+        "initial_target": 4,
+        "reassessed": false,
+        "review_eligible": true,
+        "perceived_cost": 0.0,
+        "actual_cost": 0
+      },
+      {
+        "agent_id": 38,
+        "source": 2,
+        "initial_target": 4,
+        "reassessed": false,
+        "review_eligible": true,
+        "perceived_cost": 0.0,
+        "actual_cost": 0
+      },
+      {
+        "agent_id": 39,
+        "source": 3,
+        "initial_target": 4,
+        "reassessed": false,
+        "review_eligible": true,
+        "perceived_cost": 0.0,
+        "actual_cost": 0
+      },
+      {
+        "agent_id": 40,
+        "source": 2,
+        "initial_target": 4,
+        "reassessed": false,
+        "review_eligible": true,
+        "perceived_cost": 0.0,
+        "actual_cost": 0
+      },
+      {
+        "agent_id": 41,
+        "source": 3,
+        "initial_target": 4,
+        "reassessed": false,
+        "review_eligible": true,
+        "perceived_cost": 0.0,
+        "actual_cost": 0
+      },
+      {
+        "agent_id": 42,
+        "source": 3,
+        "initial_target": 4,
+        "reassessed": false,
+        "review_eligible": true,
+        "perceived_cost": 0.0,
+        "actual_cost": 0
+      },
+      {
+        "agent_id": 43,
+        "source": 3,
+        "initial_target": 4,
+        "reassessed": false,
+        "review_eligible": true,
+        "perceived_cost": 0.0,
+        "actual_cost": 0
+      },
+      {
+        "agent_id": 44,
+        "source": 2,
+        "initial_target": 4,
+        "reassessed": false,
+        "review_eligible": true,
+        "perceived_cost": 0.0,
+        "actual_cost": 0
+      },
+      {
+        "agent_id": 45,
+        "source": 3,
+        "initial_target": 4,
+        "reassessed": false,
+        "review_eligible": true,
+        "perceived_cost": 0.0,
+        "actual_cost": 0
+      },
+      {
+        "agent_id": 46,
+        "source": 3,
+        "initial_target": 4,
+        "reassessed": false,
+        "review_eligible": true,
+        "perceived_cost": 0.0,
+        "actual_cost": 0
+      },
+      {
+        "agent_id": 47,
+        "source": 2,
+        "initial_target": 4,
+        "reassessed": false,
+        "review_eligible": true,
+        "perceived_cost": 0.0,
+        "actual_cost": 0
+      },
+      {
+        "agent_id": 48,
+        "source": 3,
+        "initial_target": 4,
+        "reassessed": false,
+        "review_eligible": true,
+        "perceived_cost": 0.0,
+        "actual_cost": 0
+      },
+      {
+        "agent_id": 49,
+        "source": 3,
+        "initial_target": 4,
+        "reassessed": false,
+        "review_eligible": true,
+        "perceived_cost": 0.0,
+        "actual_cost": 0
+      },
+      {
+        "agent_id": 50,
+        "source": 3,
+        "initial_target": 4,
+        "reassessed": false,
+        "review_eligible": true,
+        "perceived_cost": 0.0,
+        "actual_cost": 0
+      },
+      {
+        "agent_id": 51,
+        "source": 3,
+        "initial_target": 4,
+        "reassessed": false,
+        "review_eligible": true,
+        "perceived_cost": 0.0,
+        "actual_cost": 0
+      },
+      {
+        "agent_id": 52,
+        "source": 2,
+        "initial_target": 4,
+        "reassessed": false,
+        "review_eligible": true,
+        "perceived_cost": 0.0,
+        "actual_cost": 0
+      },
+      {
+        "agent_id": 53,
+        "source": 3,
+        "initial_target": 4,
+        "reassessed": false,
+        "review_eligible": true,
+        "perceived_cost": 0.0,
+        "actual_cost": 0
+      },
+      {
+        "agent_id": 54,
+        "source": 3,
+        "initial_target": 4,
+        "reassessed": false,
+        "review_eligible": true,
+        "perceived_cost": 0.0,
+        "actual_cost": 0
+      },
+      {
+        "agent_id": 55,
+        "source": 3,
+        "initial_target": 4,
+        "reassessed": false,
+        "review_eligible": true,
+        "perceived_cost": 0.0,
+        "actual_cost": 0
+      },
+      {
+        "agent_id": 56,
+        "source": 3,
+        "initial_target": 4,
+        "reassessed": false,
+        "review_eligible": true,
+        "perceived_cost": 0.0,
+        "actual_cost": 0
+      },
+      {
+        "agent_id": 57,
+        "source": 2,
+        "initial_target": 4,
+        "reassessed": false,
+        "review_eligible": true,
+        "perceived_cost": 0.0,
+        "actual_cost": 0
+      },
+      {
+        "agent_id": 58,
+        "source": 3,
+        "initial_target": 4,
+        "reassessed": false,
+        "review_eligible": true,
+        "perceived_cost": 0.0,
+        "actual_cost": 0
+      },
+      {
+        "agent_id": 59,
+        "source": 3,
+        "initial_target": 4,
+        "reassessed": false,
+        "review_eligible": true,
+        "perceived_cost": 0.0,
+        "actual_cost": 0
+      },
+      {
+        "agent_id": 60,
+        "source": 3,
+        "initial_target": 4,
+        "reassessed": false,
+        "review_eligible": true,
+        "perceived_cost": 0.0,
+        "actual_cost": 0
+      },
+      {
+        "agent_id": 61,
+        "source": 3,
+        "initial_target": 4,
+        "reassessed": false,
+        "review_eligible": true,
+        "perceived_cost": 0.0,
+        "actual_cost": 0
+      },
+      {
+        "agent_id": 62,
+        "source": 3,
+        "initial_target": 4,
+        "reassessed": false,
+        "review_eligible": true,
+        "perceived_cost": 0.0,
+        "actual_cost": 0
+      },
+      {
+        "agent_id": 63,
+        "source": 3,
+        "initial_target": 4,
+        "reassessed": false,
+        "review_eligible": true,
+        "perceived_cost": 0.0,
+        "actual_cost": 0
+      },
+      {
+        "agent_id": 64,
+        "source": 2,
+        "initial_target": 4,
+        "reassessed": false,
+        "review_eligible": true,
+        "perceived_cost": 0.0,
+        "actual_cost": 0
+      },
+      {
+        "agent_id": 65,
+        "source": 2,
+        "initial_target": 4,
+        "reassessed": false,
+        "review_eligible": true,
+        "perceived_cost": 0.0,
+        "actual_cost": 0
+      },
+      {
+        "agent_id": 66,
+        "source": 2,
+        "initial_target": 4,
+        "reassessed": false,
+        "review_eligible": true,
+        "perceived_cost": 0.0,
+        "actual_cost": 0
+      },
+      {
+        "agent_id": 67,
+        "source": 3,
+        "initial_target": 4,
+        "reassessed": false,
+        "review_eligible": true,
+        "perceived_cost": 0.0,
+        "actual_cost": 0
+      },
+      {
+        "agent_id": 68,
+        "source": 2,
+        "initial_target": 4,
+        "reassessed": false,
+        "review_eligible": true,
+        "perceived_cost": 0.0,
+        "actual_cost": 0
+      },
+      {
+        "agent_id": 69,
+        "source": 3,
+        "initial_target": 4,
+        "reassessed": false,
+        "review_eligible": true,
+        "perceived_cost": 0.0,
+        "actual_cost": 0
+      },
+      {
+        "agent_id": 70,
+        "source": 3,
+        "initial_target": 4,
+        "reassessed": false,
+        "review_eligible": true,
+        "perceived_cost": 0.0,
+        "actual_cost": 0
+      },
+      {
+        "agent_id": 71,
+        "source": 3,
+        "initial_target": 4,
+        "reassessed": false,
+        "review_eligible": true,
+        "perceived_cost": 0.0,
+        "actual_cost": 0
+      },
+      {
+        "agent_id": 72,
+        "source": 2,
+        "initial_target": 4,
+        "reassessed": false,
+        "review_eligible": true,
+        "perceived_cost": 0.0,
+        "actual_cost": 0
+      },
+      {
+        "agent_id": 73,
+        "source": 3,
+        "initial_target": 4,
+        "reassessed": false,
+        "review_eligible": true,
+        "perceived_cost": 0.0,
+        "actual_cost": 0
+      },
+      {
+        "agent_id": 74,
+        "source": 3,
+        "initial_target": 4,
+        "reassessed": false,
+        "review_eligible": true,
+        "perceived_cost": 0.0,
+        "actual_cost": 0
+      },
+      {
+        "agent_id": 75,
+        "source": 2,
+        "initial_target": 4,
+        "reassessed": false,
+        "review_eligible": true,
+        "perceived_cost": 0.0,
+        "actual_cost": 0
+      },
+      {
+        "agent_id": 76,
+        "source": 3,
+        "initial_target": 4,
+        "reassessed": false,
+        "review_eligible": true,
+        "perceived_cost": 0.0,
+        "actual_cost": 0
+      },
+      {
+        "agent_id": 77,
+        "source": 2,
+        "initial_target": 4,
+        "reassessed": false,
+        "review_eligible": true,
+        "perceived_cost": 0.0,
+        "actual_cost": 0
+      },
+      {
+        "agent_id": 78,
+        "source": 3,
+        "initial_target": 4,
+        "reassessed": false,
+        "review_eligible": true,
+        "perceived_cost": 0.0,
+        "actual_cost": 0
+      },
+      {
+        "agent_id": 79,
+        "source": 3,
+        "initial_target": 4,
+        "reassessed": false,
+        "review_eligible": true,
+        "perceived_cost": 0.0,
+        "actual_cost": 0
       }
     ],
     "new_flows": [
       {
         "source": 3,
         "target": 4,
-        "flow": 12
+        "flow": 55
       },
       {
         "source": 2,
         "target": 4,
-        "flow": 8
+        "flow": 25
       }
     ],
     "positions": {
@@ -498,8 +1639,69 @@
       "16": 4,
       "17": 4,
       "18": 4,
-      "19": 4
+      "19": 4,
+      "20": 4,
+      "21": 4,
+      "22": 4,
+      "23": 4,
+      "24": 4,
+      "25": 4,
+      "26": 4,
+      "27": 4,
+      "28": 4,
+      "29": 4,
+      "30": 4,
+      "31": 4,
+      "32": 4,
+      "33": 4,
+      "34": 4,
+      "35": 4,
+      "36": 4,
+      "37": 4,
+      "38": 4,
+      "39": 4,
+      "40": 4,
+      "41": 4,
+      "42": 4,
+      "43": 4,
+      "44": 4,
+      "45": 4,
+      "46": 4,
+      "47": 4,
+      "48": 4,
+      "49": 4,
+      "50": 4,
+      "51": 4,
+      "52": 4,
+      "53": 4,
+      "54": 4,
+      "55": 4,
+      "56": 4,
+      "57": 4,
+      "58": 4,
+      "59": 4,
+      "60": 4,
+      "61": 4,
+      "62": 4,
+      "63": 4,
+      "64": 4,
+      "65": 4,
+      "66": 4,
+      "67": 4,
+      "68": 4,
+      "69": 4,
+      "70": 4,
+      "71": 4,
+      "72": 4,
+      "73": 4,
+      "74": 4,
+      "75": 4,
+      "76": 4,
+      "77": 4,
+      "78": 4,
+      "79": 4
     },
-    "total_cost": 15.2
+    "active_count": 80,
+    "total_cost": 67.5
   }
 ]

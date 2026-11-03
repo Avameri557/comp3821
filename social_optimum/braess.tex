@@ -1,0 +1,65 @@
+\documentclass[11pt]{article}
+\input{preamble}
+
+\begin{document}
+
+\section{Social Optimum: Braess Network}
+
+\subsection{Network}
+
+\begin{figure}[H]
+  \centering
+  \includestandalone[width=0.5\textwidth]{../diagrams/braess}
+  \caption{Braess network. $x$ is the number of agents on an edge in a timestep; $2 \to 3$ is free.}
+\end{figure}
+
+All agents travel $1 \to 4$ on one of three paths, with $u + \ell + z = N$:
+\[
+  U = 1 \to 2 \to 4 \ (u), \qquad L = 1 \to 3 \to 4 \ (\ell), \qquad Z = 1 \to 2 \to 3 \to 4 \ (z).
+\]
+
+\subsection{Derivation}
+
+\paragraph{Timing.} $L$ agents cross $3 \to 4$ at step 1 and $Z$ agents at step 2, so they never congest
+each other there. In the static model they would.
+
+\paragraph{Cost.} Edge $1 \to 2$ carries $N - \ell$ agents (step 0), and $3 \to 4$ carries $\ell$ (step 1)
+then $z$ (step 2). Agents on $U$ and $L$ also pay 1. So
+\[
+  SC = 0.02\bigl[(N - \ell)^2 + \ell^2 + z^2\bigr] + (N - z), \qquad u = N - \ell - z \ge 0 .
+\]
+
+\paragraph{Optimum.} The $\ell$ and $z$ terms are independent, minimised at $\ell = N/2$ and $z = 25$.
+\begin{itemize}
+  \item $N \ge 50$: then $u = N/2 - 25 \ge 0$, so this is optimal, and $\SCopt = 0.01N^2 + N - 12.5$.
+  \item $N < 50$: $u$ would be negative, so set $u = 0$ ($\ell = N - z$) and minimise again:
+        $z = (N + 25)/3$. At $N = 20$, $z = 15$ and $\ell = 5$.
+\end{itemize}
+All values are whole numbers, so they are also the optimum for whole agents.
+
+\subsection{Results}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{@{}rrrrrrr@{}}
+\toprule
+$N$ & $u$ & $\ell$ & $z$ & $\SCopt$ & $\SCopt/N$ & Static optimum$/N$ \\
+\midrule
+20 & 0  & 5  & 15 & 14.5  & 0.725   & 0.8 \\
+50 & 0  & 25 & 25 & 62.5  & 1.25    & 1.5 \\
+80 & 15 & 40 & 25 & 131.5 & 1.64375 & 1.8 \\
+\bottomrule
+\end{tabular}
+\caption{Social optimum in the simulator, with the classical static optimum for comparison.}
+\end{table}
+
+\begin{itemize}
+  \item Static model: $Z$ shares $3 \to 4$ with $L$, so the zig-zag pays only under light congestion.
+        Everyone takes $Z$ at $N = 20$; nobody does at $N = 50$ or 80.
+  \item Simulator: $Z$ reaches $3 \to 4$ a step after $L$, so the zig-zag always helps. For $N \ge 50$ it
+        saves 12.5; at $N = 20$ it saves 1.5.
+  \item $N = 50$ is the textbook Braess network. Selfish routing (everyone on $Z$) costs 100 against a
+        static optimum of 75. The simulator's optimum, 62.5, is lower still.
+\end{itemize}
+
+\end{document}

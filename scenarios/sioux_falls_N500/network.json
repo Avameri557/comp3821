@@ -3,307 +3,307 @@
   "edges": [
     {
       "from": 1, "to": 2,
-      "cost": {"type": "linear", "a": 6, "b": 0.02}
+      "cost": {"type": "linear", "a": 6, "b": 0.01}
     },
     {
       "from": 1, "to": 3,
-      "cost": {"type": "linear", "a": 4, "b": 0.02}
+      "cost": {"type": "linear", "a": 4, "b": 0.01}
     },
     {
       "from": 2, "to": 1,
-      "cost": {"type": "linear", "a": 6, "b": 0.02}
+      "cost": {"type": "linear", "a": 6, "b": 0.01}
     },
     {
       "from": 2, "to": 6,
-      "cost": {"type": "linear", "a": 5, "b": 0.02}
+      "cost": {"type": "linear", "a": 5, "b": 0.01}
     },
     {
       "from": 3, "to": 1,
-      "cost": {"type": "linear", "a": 4, "b": 0.02}
+      "cost": {"type": "linear", "a": 4, "b": 0.01}
     },
     {
       "from": 3, "to": 4,
-      "cost": {"type": "linear", "a": 4, "b": 0.02}
+      "cost": {"type": "linear", "a": 4, "b": 0.01}
     },
     {
       "from": 3, "to": 12,
-      "cost": {"type": "linear", "a": 4, "b": 0.02}
+      "cost": {"type": "linear", "a": 4, "b": 0.01}
     },
     {
       "from": 4, "to": 3,
-      "cost": {"type": "linear", "a": 4, "b": 0.02}
+      "cost": {"type": "linear", "a": 4, "b": 0.01}
     },
     {
       "from": 4, "to": 5,
-      "cost": {"type": "linear", "a": 2, "b": 0.02}
+      "cost": {"type": "linear", "a": 2, "b": 0.01}
     },
     {
       "from": 4, "to": 11,
-      "cost": {"type": "linear", "a": 6, "b": 0.02}
+      "cost": {"type": "linear", "a": 6, "b": 0.01}
     },
     {
       "from": 5, "to": 4,
-      "cost": {"type": "linear", "a": 2, "b": 0.02}
+      "cost": {"type": "linear", "a": 2, "b": 0.01}
     },
     {
       "from": 5, "to": 6,
-      "cost": {"type": "linear", "a": 4, "b": 0.02}
+      "cost": {"type": "linear", "a": 4, "b": 0.01}
     },
     {
       "from": 5, "to": 9,
-      "cost": {"type": "linear", "a": 5, "b": 0.02}
+      "cost": {"type": "linear", "a": 5, "b": 0.01}
     },
     {
       "from": 6, "to": 2,
-      "cost": {"type": "linear", "a": 5, "b": 0.02}
+      "cost": {"type": "linear", "a": 5, "b": 0.01}
     },
     {
       "from": 6, "to": 5,
-      "cost": {"type": "linear", "a": 4, "b": 0.02}
+      "cost": {"type": "linear", "a": 4, "b": 0.01}
     },
     {
       "from": 6, "to": 8,
-      "cost": {"type": "linear", "a": 2, "b": 0.02}
+      "cost": {"type": "linear", "a": 2, "b": 0.01}
     },
     {
       "from": 7, "to": 8,
-      "cost": {"type": "linear", "a": 3, "b": 0.02}
+      "cost": {"type": "linear", "a": 3, "b": 0.01}
     },
     {
       "from": 7, "to": 18,
-      "cost": {"type": "linear", "a": 2, "b": 0.02}
+      "cost": {"type": "linear", "a": 2, "b": 0.01}
     },
     {
       "from": 8, "to": 6,
-      "cost": {"type": "linear", "a": 2, "b": 0.02}
+      "cost": {"type": "linear", "a": 2, "b": 0.01}
     },
     {
       "from": 8, "to": 7,
-      "cost": {"type": "linear", "a": 3, "b": 0.02}
+      "cost": {"type": "linear", "a": 3, "b": 0.01}
     },
     {
       "from": 8, "to": 9,
-      "cost": {"type": "linear", "a": 10, "b": 0.02}
+      "cost": {"type": "linear", "a": 10, "b": 0.01}
     },
     {
       "from": 8, "to": 16,
-      "cost": {"type": "linear", "a": 5, "b": 0.02}
+      "cost": {"type": "linear", "a": 5, "b": 0.01}
     },
     {
       "from": 9, "to": 5,
-      "cost": {"type": "linear", "a": 5, "b": 0.02}
+      "cost": {"type": "linear", "a": 5, "b": 0.01}
     },
     {
       "from": 9, "to": 8,
-      "cost": {"type": "linear", "a": 10, "b": 0.02}
+      "cost": {"type": "linear", "a": 10, "b": 0.01}
     },
     {
       "from": 9, "to": 10,
-      "cost": {"type": "linear", "a": 3, "b": 0.02}
+      "cost": {"type": "linear", "a": 3, "b": 0.01}
     },
     {
       "from": 10, "to": 9,
-      "cost": {"type": "linear", "a": 3, "b": 0.02}
+      "cost": {"type": "linear", "a": 3, "b": 0.01}
     },
     {
       "from": 10, "to": 11,
-      "cost": {"type": "linear", "a": 5, "b": 0.02}
+      "cost": {"type": "linear", "a": 5, "b": 0.01}
     },
     {
       "from": 10, "to": 15,
-      "cost": {"type": "linear", "a": 6, "b": 0.02}
+      "cost": {"type": "linear", "a": 6, "b": 0.01}
     },
     {
       "from": 10, "to": 16,
-      "cost": {"type": "linear", "a": 4, "b": 0.02}
+      "cost": {"type": "linear", "a": 4, "b": 0.01}
     },
     {
       "from": 10, "to": 17,
-      "cost": {"type": "linear", "a": 8, "b": 0.02}
+      "cost": {"type": "linear", "a": 8, "b": 0.01}
     },
     {
       "from": 11, "to": 4,
-      "cost": {"type": "linear", "a": 6, "b": 0.02}
+      "cost": {"type": "linear", "a": 6, "b": 0.01}
     },
     {
       "from": 11, "to": 10,
-      "cost": {"type": "linear", "a": 5, "b": 0.02}
+      "cost": {"type": "linear", "a": 5, "b": 0.01}
     },
     {
       "from": 11, "to": 12,
-      "cost": {"type": "linear", "a": 6, "b": 0.02}
+      "cost": {"type": "linear", "a": 6, "b": 0.01}
     },
     {
       "from": 11, "to": 14,
-      "cost": {"type": "linear", "a": 4, "b": 0.02}
+      "cost": {"type": "linear", "a": 4, "b": 0.01}
     },
     {
       "from": 12, "to": 3,
-      "cost": {"type": "linear", "a": 4, "b": 0.02}
+      "cost": {"type": "linear", "a": 4, "b": 0.01}
     },
     {
       "from": 12, "to": 11,
-      "cost": {"type": "linear", "a": 6, "b": 0.02}
+      "cost": {"type": "linear", "a": 6, "b": 0.01}
     },
     {
       "from": 12, "to": 13,
-      "cost": {"type": "linear", "a": 3, "b": 0.02}
+      "cost": {"type": "linear", "a": 3, "b": 0.01}
     },
     {
       "from": 13, "to": 12,
-      "cost": {"type": "linear", "a": 3, "b": 0.02}
+      "cost": {"type": "linear", "a": 3, "b": 0.01}
     },
     {
       "from": 13, "to": 24,
-      "cost": {"type": "linear", "a": 4, "b": 0.02}
+      "cost": {"type": "linear", "a": 4, "b": 0.01}
     },
     {
       "from": 14, "to": 11,
-      "cost": {"type": "linear", "a": 4, "b": 0.02}
+      "cost": {"type": "linear", "a": 4, "b": 0.01}
     },
     {
       "from": 14, "to": 15,
-      "cost": {"type": "linear", "a": 5, "b": 0.02}
+      "cost": {"type": "linear", "a": 5, "b": 0.01}
     },
     {
       "from": 14, "to": 23,
-      "cost": {"type": "linear", "a": 4, "b": 0.02}
+      "cost": {"type": "linear", "a": 4, "b": 0.01}
     },
     {
       "from": 15, "to": 10,
-      "cost": {"type": "linear", "a": 6, "b": 0.02}
+      "cost": {"type": "linear", "a": 6, "b": 0.01}
     },
     {
       "from": 15, "to": 14,
-      "cost": {"type": "linear", "a": 5, "b": 0.02}
+      "cost": {"type": "linear", "a": 5, "b": 0.01}
     },
     {
       "from": 15, "to": 19,
-      "cost": {"type": "linear", "a": 3, "b": 0.02}
+      "cost": {"type": "linear", "a": 3, "b": 0.01}
     },
     {
       "from": 15, "to": 22,
-      "cost": {"type": "linear", "a": 3, "b": 0.02}
+      "cost": {"type": "linear", "a": 3, "b": 0.01}
     },
     {
       "from": 16, "to": 8,
-      "cost": {"type": "linear", "a": 5, "b": 0.02}
+      "cost": {"type": "linear", "a": 5, "b": 0.01}
     },
     {
       "from": 16, "to": 10,
-      "cost": {"type": "linear", "a": 4, "b": 0.02}
+      "cost": {"type": "linear", "a": 4, "b": 0.01}
     },
     {
       "from": 16, "to": 17,
-      "cost": {"type": "linear", "a": 2, "b": 0.02}
+      "cost": {"type": "linear", "a": 2, "b": 0.01}
     },
     {
       "from": 16, "to": 18,
-      "cost": {"type": "linear", "a": 3, "b": 0.02}
+      "cost": {"type": "linear", "a": 3, "b": 0.01}
     },
     {
       "from": 17, "to": 10,
-      "cost": {"type": "linear", "a": 8, "b": 0.02}
+      "cost": {"type": "linear", "a": 8, "b": 0.01}
     },
     {
       "from": 17, "to": 16,
-      "cost": {"type": "linear", "a": 2, "b": 0.02}
+      "cost": {"type": "linear", "a": 2, "b": 0.01}
     },
     {
       "from": 17, "to": 19,
-      "cost": {"type": "linear", "a": 2, "b": 0.02}
+      "cost": {"type": "linear", "a": 2, "b": 0.01}
     },
     {
       "from": 18, "to": 7,
-      "cost": {"type": "linear", "a": 2, "b": 0.02}
+      "cost": {"type": "linear", "a": 2, "b": 0.01}
     },
     {
       "from": 18, "to": 16,
-      "cost": {"type": "linear", "a": 3, "b": 0.02}
+      "cost": {"type": "linear", "a": 3, "b": 0.01}
     },
     {
       "from": 18, "to": 20,
-      "cost": {"type": "linear", "a": 4, "b": 0.02}
+      "cost": {"type": "linear", "a": 4, "b": 0.01}
     },
     {
       "from": 19, "to": 15,
-      "cost": {"type": "linear", "a": 3, "b": 0.02}
+      "cost": {"type": "linear", "a": 3, "b": 0.01}
     },
     {
       "from": 19, "to": 17,
-      "cost": {"type": "linear", "a": 2, "b": 0.02}
+      "cost": {"type": "linear", "a": 2, "b": 0.01}
     },
     {
       "from": 19, "to": 20,
-      "cost": {"type": "linear", "a": 4, "b": 0.02}
+      "cost": {"type": "linear", "a": 4, "b": 0.01}
     },
     {
       "from": 20, "to": 18,
-      "cost": {"type": "linear", "a": 4, "b": 0.02}
+      "cost": {"type": "linear", "a": 4, "b": 0.01}
     },
     {
       "from": 20, "to": 19,
-      "cost": {"type": "linear", "a": 4, "b": 0.02}
+      "cost": {"type": "linear", "a": 4, "b": 0.01}
     },
     {
       "from": 20, "to": 21,
-      "cost": {"type": "linear", "a": 6, "b": 0.02}
+      "cost": {"type": "linear", "a": 6, "b": 0.01}
     },
     {
       "from": 20, "to": 22,
-      "cost": {"type": "linear", "a": 5, "b": 0.02}
+      "cost": {"type": "linear", "a": 5, "b": 0.01}
     },
     {
       "from": 21, "to": 20,
-      "cost": {"type": "linear", "a": 6, "b": 0.02}
+      "cost": {"type": "linear", "a": 6, "b": 0.01}
     },
     {
       "from": 21, "to": 22,
-      "cost": {"type": "linear", "a": 2, "b": 0.02}
+      "cost": {"type": "linear", "a": 2, "b": 0.01}
     },
     {
       "from": 21, "to": 24,
-      "cost": {"type": "linear", "a": 3, "b": 0.02}
+      "cost": {"type": "linear", "a": 3, "b": 0.01}
     },
     {
       "from": 22, "to": 15,
-      "cost": {"type": "linear", "a": 3, "b": 0.02}
+      "cost": {"type": "linear", "a": 3, "b": 0.01}
     },
     {
       "from": 22, "to": 20,
-      "cost": {"type": "linear", "a": 5, "b": 0.02}
+      "cost": {"type": "linear", "a": 5, "b": 0.01}
     },
     {
       "from": 22, "to": 21,
-      "cost": {"type": "linear", "a": 2, "b": 0.02}
+      "cost": {"type": "linear", "a": 2, "b": 0.01}
     },
     {
       "from": 22, "to": 23,
-      "cost": {"type": "linear", "a": 4, "b": 0.02}
+      "cost": {"type": "linear", "a": 4, "b": 0.01}
     },
     {
       "from": 23, "to": 14,
-      "cost": {"type": "linear", "a": 4, "b": 0.02}
+      "cost": {"type": "linear", "a": 4, "b": 0.01}
     },
     {
       "from": 23, "to": 22,
-      "cost": {"type": "linear", "a": 4, "b": 0.02}
+      "cost": {"type": "linear", "a": 4, "b": 0.01}
     },
     {
       "from": 23, "to": 24,
-      "cost": {"type": "linear", "a": 2, "b": 0.02}
+      "cost": {"type": "linear", "a": 2, "b": 0.01}
     },
     {
       "from": 24, "to": 13,
-      "cost": {"type": "linear", "a": 4, "b": 0.02}
+      "cost": {"type": "linear", "a": 4, "b": 0.01}
     },
     {
       "from": 24, "to": 21,
-      "cost": {"type": "linear", "a": 3, "b": 0.02}
+      "cost": {"type": "linear", "a": 3, "b": 0.01}
     },
     {
       "from": 24, "to": 23,
-      "cost": {"type": "linear", "a": 2, "b": 0.02}
+      "cost": {"type": "linear", "a": 2, "b": 0.01}
     }
   ],
   "coordinates": {

@@ -1,0 +1,77 @@
+\documentclass[11pt]{article}
+\input{preamble}
+
+\begin{document}
+
+\section{Social Optimum: $3 \times 3$ Grid Network}
+
+\subsection{Network}
+
+\begin{figure}[H]
+  \centering
+  \includestandalone[width=0.75\textwidth]{../diagrams/grid}
+  \caption{Grid network. $x$ is the number of agents on an edge in a timestep; $2 \to 3$ is free.}
+\end{figure}
+
+All agents travel $1 \to 9$, moving right or down, on one of six paths:
+
+\begin{center}
+\begin{tabular}{@{}llr@{}}
+\toprule
+Path & Nodes & Base cost $\sum a_e$ \\
+\midrule
+RRDD & $1 \to 2 \to 3 \to 6 \to 9$ & 3.11 \\
+RDRD & $1 \to 2 \to 5 \to 6 \to 9$ & 4.08 \\
+RDDR & $1 \to 2 \to 5 \to 8 \to 9$ & 4.14 \\
+DRRD & $1 \to 4 \to 5 \to 6 \to 9$ & 4.18 \\
+DRDR & $1 \to 4 \to 5 \to 8 \to 9$ & 4.24 \\
+DDRR & $1 \to 4 \to 7 \to 8 \to 9$ & 4.31 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection{Derivation}
+
+The node in row $r$, column $c$ is reached at step $r + c$ on every path, so timing plays no role. With
+$x_e$ agents on edge $e$,
+\[
+  SC = \sum_e x_e\,(a_e + 0.02\,x_e).
+\]
+At the optimum every used path has the same marginal cost $\sum_{e \in P}(a_e + 0.04\,x_e)$, and no unused
+path is cheaper. There is no simple closed form, so we solve it numerically: add agents one at a time
+along the path with the cheapest marginal cost, rerouting earlier agents when that helps (successive
+shortest paths). This is exact for convex costs.
+
+\textbf{Data.} Edge costs and $N$ from \file{scenarios/grid_N20}, \file{scenarios/grid_N50} and
+\file{scenarios/grid}.
+
+\subsection{Results}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{@{}lrrr@{}}
+\toprule
+Path & $N = 20$ & $N = 50$ & $N = 80$ \\
+\midrule
+RRDD & 15 & 28 & 39 \\
+RDRD & 0  & 2  & 7  \\
+RDDR & 0  & 0  & 0  \\
+DRRD & 0  & 0  & 0  \\
+DRDR & 3  & 10 & 17 \\
+DDRR & 2  & 10 & 17 \\
+\midrule
+$\SCopt$   & 83.01  & 256.58 & 481.58  \\
+$\SCopt/N$ & 4.1505 & 5.1316 & 6.01975 \\
+\bottomrule
+\end{tabular}
+\caption{An optimal routing for each $N$. Edge loads are unique; the split into paths need not be.}
+\end{table}
+
+\begin{itemize}
+  \item RRDD, the only path through the free edge, carries 75\% of agents at $N = 20$, 56\% at $N = 50$
+        and 49\% at $N = 80$. As its other edges fill up, the optimum spreads agents across the grid.
+  \item $N = 20$: the middle edges $2 \to 5$ and $5 \to 6$ are not worth using.
+  \item $\SCopt/N$ rises from 4.15 to 6.02 as $N$ grows from 20 to 80.
+\end{itemize}
+
+\end{document}
