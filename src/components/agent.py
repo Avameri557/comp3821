@@ -30,7 +30,7 @@ class Agent:
 
 
 class InformationModel:
-    """What one agent sees of the other agents' announced next edges."""
+    """What one agent sees of the other agents' announced routes."""
 
     def __init__(self, alpha=1.0, rng=None):
         if not 0 <= alpha <= 1:
@@ -38,23 +38,21 @@ class InformationModel:
         self.alpha = alpha
         self.rng = rng if rng is not None else random.Random()
 
-    def observe_intentions(self, intentions, agent=None):
-        """Count K_e of *other* agents announcing each edge that this agent sees.
+    def observe_routes(self, intentions, agent=None):
+        """Count K[(edge, j)]: other agents seen planning to cross `edge` j steps from now.
 
-        Each other agent's announcement is seen independently with probability alpha.
+        Each other agent's whole announced route is seen independently with probability alpha.
         """
         observed = {}
         for intention in intentions:
             if agent is not None and intention["agent"].agent_id == agent.agent_id:
                 continue
-            edge = (intention["source"], intention["target"])
             if self.rng.random() < self.alpha:
-                observed[edge] = observed.get(edge, 0) + 1
+                route = intention["route"]
+                for j, edge in enumerate(zip(route, route[1:])):
+                    observed[(edge, j)] = observed.get((edge, j), 0) + 1
         return observed
 
-    def estimate_flows(self, network, observed):
-        """Estimated number of *other* agents on each edge: K_e / alpha (unbiased)."""
-        return {
-            (u, v): (observed.get((u, v), 0) / self.alpha if self.alpha else 0)
-            for u, v in network.graph.edges()
-        }
+    def estimate_load(self, observed, edge, j):
+        """Estimated number of *other* agents crossing `edge` j steps from now: K / alpha (unbiased)."""
+        return observed.get((edge, j), 0) / self.alpha if self.alpha else 0.0

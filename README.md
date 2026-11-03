@@ -8,9 +8,11 @@ Please make a new branch for any new feature, ideally named `category/feature` (
 
 Each scenario has N = 50 agents travelling from origins to destinations on a directed graph. An edge costs `a + b·x`, where x is the number of agents crossing it in the same step. Every step:
 
-1. Each agent still travelling plans its cheapest path on empty-road costs and announces its next edge.
-2. Each agent sees every other agent's announcement independently with probability **α**. It estimates the load on each edge as (announcements seen) / α, adds itself on the edges leaving its current node, and re-plans.
+1. Each agent still travelling plans its cheapest path on empty-road costs and announces the **whole route, with timing**: the j-th edge of its route is crossed j steps from now.
+2. Each agent sees every other agent's whole route independently with probability **α**. For every edge and every future step, it estimates the load as (routes seen crossing that edge at that step) / α, adds itself, and re-plans its cheapest path through time.
 3. All agents move one edge at the same time and pay the edge's cost at that step's load.
+
+Agents re-plan every step, so only the first edge of any plan is committed. Everyone sees the original announcements, not other agents' revised plans. (The `simplified` branch has the same model with next-edge announcements instead.)
 
 Agents only move forwards: they never step to a node closer (in hops) to their own origin and never revisit a node. Set `"forward_only": false` in `config.json` to turn this off. `revision_percentage` in `config.json` sets the share of agents that re-plan in step 2 (100 in every scenario).
 

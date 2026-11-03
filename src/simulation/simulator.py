@@ -3,13 +3,15 @@ Step-based routing simulation with partial information.
 
 Every step:
   1. Each agent still travelling plans its cheapest path on empty-road costs
-     and announces its next edge.
+     and announces the whole route: its j-th edge is crossed j steps from now.
   2. A share of agents (revision_percentage) reviews that plan. A reviewing
-     agent sees each other agent's announcement with probability alpha,
-     estimates the load on every edge as (announcements seen) / alpha, adds
-     itself on the edges leaving its current node, and re-plans.
+     agent sees each other agent's whole route with probability alpha. For
+     every edge and every future step it estimates the load as (routes seen
+     crossing that edge at that step) / alpha, adds itself, and re-plans the
+     cheapest path through time.
   3. All agents move one edge at the same time. An edge costs a + b * f,
      where f is the number of agents crossing it in that step.
+Agents re-plan every step; only the first edge of a plan is ever committed.
 """
 
 from collections import Counter
@@ -66,15 +68,14 @@ class Simulation:
     def step(self):
         graph = self.network.graph
 
-        # 1. Plans on empty-road costs; announce the next edge.
+        # 1. Plans on empty-road costs; announce the whole route.
         free_flow_costs = {(u, v): data["edge"].cost(flow=0) for u, v, data in graph.edges(data=True)}
         intentions = []
         for agent in self.agents:
             if agent.arrived:
                 continue
-            next_node = self.routing.choose_next_node(agent, graph, free_flow_costs, depth=self.depth_for(agent))
-            if next_node is not None:
-                intentions.append({"agent": agent, "source": agent.current_node, "target": next_node})
+            route = self.routing.choose_path(agent, graph, free_flow_costs, depth=self.depth_for(agent))
+            intentions.append({"agent": agent, "route": route})
 
         # 2. An exact share of agents (rounded to the nearest agent) reviews its plan.
         #    Everyone sees the original announcements, not other agents' revisions.
@@ -84,17 +85,17 @@ class Simulation:
         for intention in intentions:
             agent = intention["agent"]
             if id(intention) not in reviewers:
-                moves.append((agent, intention["source"], intention["target"]))
-                continue
-            model = InformationModel(agent.alpha, rng=self.rng)
-            estimated_others = model.estimate_flows(self.network, model.observe_intentions(intentions, agent=agent))
-            perceived = {
-                (u, v): data["edge"].cost(flow=estimated_others[(u, v)] + (1 if u == agent.current_node else 0))
-                for u, v, data in graph.edges(data=True)
-            }
-            next_node = self.routing.choose_next_node(agent, graph, perceived, depth=self.depth_for(agent))
-            if next_node is not None:
-                moves.append((agent, agent.current_node, next_node))
+                route = intention["route"]
+            else:
+                model = InformationModel(agent.alpha, rng=self.rng)
+                observed = model.observe_routes(intentions, agent=agent)
+
+                def timed_cost(u, v, j):
+                    # Others expected on (u, v) j steps from now, plus this agent.
+                    return self.network.get_edge(u, v).cost(flow=model.estimate_load(observed, (u, v), j) + 1)
+
+                route = self.routing.choose_timed_path(agent, graph, timed_cost, depth=self.depth_for(agent))
+            moves.append((agent, route[0], route[1]))
 
         # 3. Everyone moves at once; each edge is costed at its flow this step.
         flows = Counter((source, target) for _, source, target in moves)
