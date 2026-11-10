@@ -53,6 +53,11 @@ class InformationModel:
                     observed[edge] = observed.get(edge, 0) + 1
         return observed
 
-    def estimate_load(self, observed, edge):
-        """Estimated number of *other* agents using `edge`: K / alpha (unbiased)."""
-        return observed.get(edge, 0) / self.alpha if self.alpha else 0.0
+    def estimate_load(self, observed, edge, cap=None):
+        """Estimated number of *other* agents using `edge`: K / alpha (unbiased).
+
+        cap: if given, the estimate is limited to this many agents (the number
+        of other agents in the scenario), so impossible loads are ruled out.
+        """
+        estimate = observed.get(edge, 0) / self.alpha if self.alpha else 0.0
+        return estimate if cap is None else min(estimate, cap)

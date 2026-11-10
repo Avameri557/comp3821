@@ -33,12 +33,15 @@ from src.components.routing_strategies import SelfishRouting
 
 
 class Simulation:
-    def __init__(self, network, agents, seed=None, revision_percentage=100, forward_only=True):
+    def __init__(self, network, agents, seed=None, revision_percentage=100, forward_only=True,
+                 cap_estimates=False):
         if isinstance(revision_percentage, bool) or not isinstance(revision_percentage, (int, float)) \
                 or not 0 <= revision_percentage <= 100:
             raise ValueError("revision_percentage must be a number between 0 and 100")
         if not isinstance(forward_only, bool):
             raise ValueError("forward_only must be true or false")
+        if not isinstance(cap_estimates, bool):
+            raise ValueError("cap_estimates must be true or false")
         self.network = network
         self.agents = agents
         self.routing = SelfishRouting()
@@ -47,6 +50,9 @@ class Simulation:
         # Agents only move forwards: never to a node closer (in hops) to their
         # own origin than where they are, and never back to a visited node.
         self.forward_only = forward_only
+        # Agents know how many agents there are, so no estimated load on an edge
+        # can exceed the number of other agents.
+        self.estimate_cap = len(agents) - 1 if cap_estimates else None
         self._depth_from = {}
         # Each agent's most recently chosen route (from its origin), announced every step.
         self.current_routes = {}
@@ -108,7 +114,7 @@ class Simulation:
             observed = model.observe_routes(intentions, agent=agent)
             perceived = {
                 # Others expected on the edge over the whole run, plus this agent.
-                (u, v): data["edge"].cost(flow=model.estimate_load(observed, (u, v)) + 1)
+                (u, v): data["edge"].cost(flow=model.estimate_load(observed, (u, v), cap=self.estimate_cap) + 1)
                 for u, v, data in graph.edges(data=True)
             }
             plan = self.routing.choose_path(agent, graph, perceived, depth=self.depth_for(agent))

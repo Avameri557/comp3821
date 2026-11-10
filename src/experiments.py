@@ -23,6 +23,7 @@ Usage:
     python -m src.experiments                                  # everything
     python -m src.experiments --network pigou --test symmetric
     python -m src.experiments --plot-only                      # redraw charts from the CSVs
+    python -m src.experiments --cap                            # agents cap estimates at N - 1
 
 Outputs:
     results/benchmarks.csv
@@ -65,9 +66,9 @@ def alpha_grid(step):
     return [round(i * step, 10) for i in range(n + 1)]
 
 
-def run_one(scenario, seed, test, alpha):
+def run_one(scenario, seed, test, alpha, cap=False):
     """One simulation. Returns (completed, mean cost per agent, informed agent's cost)."""
-    simulation, config = load_scenario(scenario, seed=seed)
+    simulation, config = load_scenario(scenario, {"cap_estimates": True} if cap else None, seed=seed)
     agents = simulation.agents
     # Separate random stream, so picking the agent does not change the simulation's draws.
     informed = random.Random(seed * 7919 + 1).choice(agents)
@@ -84,16 +85,16 @@ def run_one(scenario, seed, test, alpha):
 
 def run_trial(task):
     """All alphas for one trial (one seed)."""
-    scenario, test, seed, alphas = task
-    return [(alpha, *run_one(scenario, seed, test, alpha)) for alpha in alphas]
+    scenario, test, seed, alphas, cap = task
+    return [(alpha, *run_one(scenario, seed, test, alpha, cap)) for alpha in alphas]
 
 
 def ci95(values):
     return 1.96 * stdev(values) / math.sqrt(len(values)) if len(values) > 1 else 0.0
 
 
-def run_test(network, test, trials, alphas, benchmark, workers):
-    tasks = [(str(SCENARIOS / network), test, BASE_SEED + t, alphas) for t in range(trials)]
+def run_test(network, test, trials, alphas, benchmark, workers, cap=False):
+    tasks = [(str(SCENARIOS / network), test, BASE_SEED + t, alphas, cap) for t in range(trials)]
     runs = {alpha: [] for alpha in alphas}
     with ProcessPoolExecutor(max_workers=workers) as pool:
         for trial in pool.map(run_trial, tasks, chunksize=max(1, trials // (4 * (workers or 1)))):
@@ -249,12 +250,17 @@ def main():
     parser.add_argument("--step", type=float, default=0.05, help="Spacing of the alpha values")
     parser.add_argument("--trials", type=int, default=200, help="Trials per point")
     parser.add_argument("--workers", type=int, default=os.cpu_count())
-    parser.add_argument("--output", type=Path, default=RESULTS)
+    parser.add_argument("--cap", action="store_true",
+                        help="Agents cap every estimated load at the number of other agents (N - 1)")
+    parser.add_argument("--output", type=Path, default=None,
+                        help="Default: results/, or results_capped/ with --cap")
     parser.add_argument("--plot-only", action="store_true", help="Redraw the charts from existing CSVs")
     args = parser.parse_args()
 
     networks = args.network or list(NETWORKS)
     tests = args.test or list(TESTS)
+    if args.output is None:
+        args.output = Path("results_capped") if args.cap else RESULTS
 
     if not args.plot_only:
         bench = benchmarks(networks)
@@ -266,7 +272,7 @@ def main():
             network = row["network"]
             for test in tests:
                 print(f"{network} / {test}: {args.trials} trials x {len(alphas)} alphas", flush=True)
-                rows = run_test(network, test, args.trials, alphas, row, args.workers)
+                rows = run_test(network, test, args.trials, alphas, row, args.workers, args.cap)
                 write_csv(args.output / network / f"{test}.csv", rows)
                 incomplete = sum(r["incomplete_runs"] for r in rows)
                 if incomplete:

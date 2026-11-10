@@ -16,6 +16,8 @@ Agents re-plan every step, so only the first edge of any plan is committed. (The
 
 Agents only move forwards: they never step to a node closer (in hops) to their own origin and never revisit a node. Set `"forward_only": false` in `config.json` to turn this off. `revision_percentage` in `config.json` sets the share of agents that re-plan in step 2 (100 in every scenario).
 
+**Capping estimates (optional).** By default an agent's estimate K/α can be any size, so with little information it can believe an edge holds more agents than exist. Set `"cap_estimates": true` in `config.json` (or run the experiments with `--cap`) and agents know how many agents there are: every estimated load is limited to N − 1, the number of other agents. On Pigou this removes every switch to the bottom road, because the top road can then never look worse than it can really be (0.02 × 50 = 1).
+
 ## Networks
 
 Each network's congestion slopes are set at or near its worst-case price of anarchy at 50 agents. Diagrams are in `diagrams/`.
@@ -47,11 +49,12 @@ Each line has a shaded 95% confidence band. Every chart also shows the Wardrop e
 python -m src.experiments                                    # all networks, all four tests
 python -m src.experiments --network braess --test symmetric  # one chart
 python -m src.experiments --plot-only                        # redraw charts from the CSVs
+python -m src.experiments --cap                              # agents cap estimates at N - 1
 ```
 
 α runs from 0 to 1 in steps of 0.05 (`--step`). Each point averages 200 trials (`--trials`). Trial t uses seed 3821 + t at every α, so points along a line differ only in information.
 
-Output in `results/`:
+Output in `results/` (or `results_capped/` with `--cap`):
 
 - `benchmarks.csv`: Wardrop and optimum cost per agent, and the price of anarchy, for every network
 - `<network>/<test>.png`: the chart
@@ -83,4 +86,5 @@ src/benchmarks/           Wardrop equilibrium and social optimum
 src/experiments.py        the four tests and their charts
 diagrams/                 TikZ sources, build script and PNGs
 results/                  test output
+results_capped/           test output with capped estimates
 ```

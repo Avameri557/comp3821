@@ -4,7 +4,7 @@ Load a scenario folder:
     network.json   nodes and edges, each with a linear cost {"a": ..., "b": ...}
     agents.json    {"generate": {"count", "sources", "destinations", "alpha"}}
                    or {"agents": [{"id", "origin", "destination", "alpha"}, ...]}
-    config.json    max_timesteps, seed, revision_percentage, forward_only
+    config.json    max_timesteps, seed, revision_percentage, forward_only, cap_estimates
 """
 
 import json
@@ -91,5 +91,6 @@ def load_scenario(directory, overrides=None, seed=None):
         seed=seed,
         revision_percentage=config.get("revision_percentage", 100),
         forward_only=config.get("forward_only", True),
+        cap_estimates=config.get("cap_estimates", False),
     )
     return simulation, config
