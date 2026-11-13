@@ -1,0 +1,45 @@
+\documentclass[11pt]{article}
+\input{preamble}
+
+\begin{document}
+
+\section{Social Optimum: Definition}
+
+\paragraph{Social cost.} An edge $e$ crossed by $f$ agents in the same timestep costs each of them
+$c_e(f) = a_e + b_e f$. The social cost of a run is the total paid by all agents,
+\[
+  SC = \sum_t \sum_e f_e(t)\, c_e\bigl(f_e(t)\bigr),
+\]
+where $f_e(t)$ is the number of agents crossing $e$ in step $t$.
+
+\paragraph{Social optimum.} $\SCopt$ is the lowest social cost any routing of the $N$ agents can achieve
+under the simulator's movement rules:
+\begin{enumerate}
+  \item all agents start at $t = 0$;
+  \item every agent that has not arrived crosses exactly one edge per step (no waiting);
+  \item no agent moves back towards its origin or revisits a node (\texttt{forward\_only}).
+\end{enumerate}
+Agents are indivisible. Edge costs do not change with $N$, so $\SCopt$ is computed separately for each
+population size and reported per agent, $\SCopt/N$.
+
+\paragraph{As a choice of paths.} Under these rules an agent crosses the $k$-th edge of its path at step
+$k - 1$. A routing is therefore just a path for each agent, and
+\[
+  \SCopt = \min_{\text{paths}} \sum_{e,\,t} X_{e,t}\,\bigl(a_e + b_e X_{e,t}\bigr),
+\]
+where $X_{e,t}$ is the number of agents whose $(t{+}1)$-th edge is $e$. Agents congest each other only if
+they cross the same edge in the same step.
+
+\paragraph{Relation to the static optimum.} The classical static optimum is
+$\min \sum_e x_e\, c_e(x_e)$ over the same paths, where $x_e$ is the total number of agents using $e$:
+every user of an edge is charged for all of its users, whenever they cross.
+\begin{itemize}
+  \item If every edge is always crossed at the same step (Pigou, Diamond, Grid), then $X_{e,t} = x_e$ and
+        the two optima are equal.
+  \item Otherwise $\SCopt$ is never higher, since $\sum_t X_{e,t}^2 \le \bigl(\sum_t X_{e,t}\bigr)^2$:
+        spreading an edge's users over several steps can only reduce congestion. For Braess and Sioux
+        Falls it is strictly lower.
+\end{itemize}
+Every simulated run costs at least $\SCopt$, so $SC/\SCopt \ge 1$ measures how far a run is from optimal.
+
+\end{document}

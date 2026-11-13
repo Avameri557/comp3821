@@ -1,0 +1,95 @@
+\documentclass[11pt]{article}
+\input{preamble}
+% Defined in the preamble of ../diagrams/sioux_falls.tex, which \includestandalone skips.
+\definecolor{destfill}{HTML}{FDE7DC}
+
+\begin{document}
+
+\section{Social Optimum: Sioux Falls Network}
+
+\subsection{Network and demand}
+
+\begin{figure}[H]
+  \centering
+  \includestandalone[width=0.85\textwidth]{../diagrams/sioux_falls}
+  \caption{Sioux Falls network. Every link costs $a + 0.01x$ in each direction; labels show $a$.}
+\end{figure}
+
+There are 24 nodes and 76 directed edges. Each agent draws an origin from $\{1, 2, 3\}$ and a destination
+from $\{19, 20, 22\}$ using the run's seed, so demand varies by seed. With \texttt{forward\_only} there are
+404 feasible paths. We use $N = 250$, 500 and 1000.
+
+\subsection{Derivation}
+
+\paragraph{Timing matters.} Edge $2 \to 6$ is the first edge for agents from 2 but the second for agents
+from 1 via 2, so its users can cross it in different steps. With $X_{e,t}$ agents crossing $e$ in step
+$t$,
+\[
+  SC = \sum_{e,\,t} X_{e,t}\,(a_e + 0.01\,X_{e,t}),
+\]
+minimised over how many agents of each origin--destination pair take each path. There is no closed form,
+so we bracket the optimum numerically:
+\begin{itemize}
+  \item \textbf{Lower bound:} allow fractional agents and solve the resulting convex problem.
+  \item \textbf{Upper bound:} round to whole agents, then move single agents between paths while that
+        lowers the cost.
+\end{itemize}
+In all 153 cases (3 sizes $\times$ 51 seeds) the bounds are within 0.13 of each other, so we report the
+upper bound as $\SCopt$.
+
+\textbf{Data.} Below, \texttt{<s>} is \texttt{sioux\_falls\_N250}, \texttt{sioux\_falls\_N500} or
+\texttt{sioux\_falls}.
+\begin{itemize}
+  \item Network and agent draws: \file{scenarios/<s>}, with the config seed (42) and the sweep seeds.
+  \item Sweep seeds (3821--3870) and simulated costs (\texttt{social\_cost}):
+        \file{results/<s>/raw_results.csv}.
+  \item Best $\alpha$: lowest \texttt{mean\_social\_cost} in \file{results/<s>/summary.csv}.
+  \item Static optimum: agrees with \file{src/benchmarks/frank_wolfe.py} (\texttt{-{}-demand sampled}).
+\end{itemize}
+
+\subsection{Results}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{@{}rrrrrr@{}}
+\toprule
+& \multicolumn{4}{c}{Seed 42} & Sweep seeds \\
+\cmidrule(lr){2-5}\cmidrule(l){6-6}
+$N$ & Lower bound & $\SCopt$ & $\SCopt/N$ & Congestion share & $\SCopt/N$ (mean $\pm$ sd) \\
+\midrule
+250  & 5400.25  & 5400.33  & 21.601 & 9.6\%  & $21.773 \pm 0.139$ \\
+500  & 11714.81 & 11714.87 & 23.430 & 14.6\% & $23.572 \pm 0.086$ \\
+1000 & 26684.81 & 26684.91 & 26.685 & 23.4\% & $26.739 \pm 0.062$ \\
+\bottomrule
+\end{tabular}
+\caption{Social optimum. Congestion share is the part of the cost from congestion,
+$\sum 0.01\,X_{e,t}^2$.}
+\end{table}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{@{}rrrrr@{}}
+\toprule
+& \multicolumn{3}{c}{Simulator (mean of 50 trials)} & \\
+\cmidrule(lr){2-4}
+$N$ & $\alpha = 0$ & Best $\alpha$ & $\alpha = 1$ & Static optimum \\
+\midrule
+250  & 1.008 & 1.006 ($\alpha = 0.02$) & 1.011 & 1.084 \\
+500  & 1.039 & 1.025 ($\alpha = 0.02$) & 1.038 & 1.140 \\
+1000 & 1.108 & 1.055 ($\alpha = 0.01$) & 1.161 & 1.222 \\
+\bottomrule
+\end{tabular}
+\caption{Cost relative to $\SCopt$. Each simulated trial is divided by the optimum for its own seed. The
+static optimum is for seed 42.}
+\end{table}
+
+\begin{itemize}
+  \item The optimum \emph{staggers} agents in time. At $N = 1000$, edge $2 \to 6$ carries 271, 139 and 17
+        agents at steps 0, 1 and 2, so later arrivals add nothing to earlier congestion. The static model
+        cannot do this, so its optimum is 8--22\% higher and unreachable in the simulator.
+  \item The gap between the simulator and the optimum grows with $N$: at the best $\alpha$ it is 0.6\%,
+        2.5\% and 5.5\%.
+  \item Reference lines for the sweep graphs: 21.773, 23.572 and 26.739 per agent.
+\end{itemize}
+
+\end{document}

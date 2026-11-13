@@ -1,0 +1,58 @@
+\documentclass[11pt]{article}
+\input{preamble}
+
+\begin{document}
+
+\section{Social Optimum: Pigou Network}
+
+\subsection{Network}
+
+\begin{figure}[H]
+  \centering
+  \includestandalone[width=0.75\textwidth]{../diagrams/pigou}
+  \caption{Pigou network. $x$ is the number of agents on an edge in a timestep.}
+\end{figure}
+
+All agents travel $1 \to 4$ on the top route $T$ (cost $0.02x$) or the bottom route $B$ (cost 1). All users
+of $T$ cross $1 \to 2$ in the same step, so timing plays no role.
+
+\subsection{Derivation}
+
+With $k$ agents on $T$, each of them pays $0.02k$, and each of the $N - k$ agents on $B$ pays 1:
+\[
+  SC(k) = \underbrace{k \cdot 0.02k}_{T} + \underbrace{(N - k) \cdot 1}_{B} = 0.02k^2 + (N - k).
+\]
+$SC'(k) = 0.04k - 1 = 0$ gives $k = 25$: fill $T$ until its marginal cost reaches $B$'s cost of 1. Since
+$k \le N$,
+\[
+  k^* = \min(N, 25), \qquad
+  \SCopt = \begin{cases} 0.02N^2 & N \le 25 \\ N - 12.5 & N \ge 25 \end{cases}
+\]
+$k^*$ is a whole number, so this is also the optimum for whole agents. Selfish agents instead fill $T$
+until it costs 1, so $k_{\mathrm{UE}} = \min(N, 50)$.
+
+\subsection{Results}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{@{}rrrrrrr@{}}
+\toprule
+$N$ & On $T$ & On $B$ & $\SCopt$ & $\SCopt/N$ & $SC_{\mathrm{UE}}$ & $SC_{\mathrm{UE}}/\SCopt$ \\
+\midrule
+20 & 20 & 0  & 8    & 0.4     & 8  & 1 \\
+50 & 25 & 25 & 37.5 & 0.75    & 50 & $4/3$ \\
+80 & 25 & 55 & 67.5 & 0.84375 & 80 & $32/27 \approx 1.19$ \\
+\bottomrule
+\end{tabular}
+\caption{Social optimum and selfish equilibrium. The last column is the price of anarchy.}
+\end{table}
+
+\begin{itemize}
+  \item $N = 20$: $T$ never gets crowded enough to need $B$. Selfish routing is already optimal, and any
+        agent that moves to $B$ raises the social cost.
+  \item $N = 50$: with everyone on $T$ it costs exactly 1, the textbook Pigou example, with the worst-case
+        price of anarchy for linear costs ($4/3$).
+  \item $N > 25$: $T$ keeps 25 agents and the rest pay 1, so $\SCopt/N = 1 - 12.5/N$ rises with $N$.
+\end{itemize}
+
+\end{document}
