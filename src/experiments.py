@@ -1,5 +1,5 @@
 """
-The four tests, run on every network, with one chart per network per test.
+The tests, run on every network, with one chart per network per test.
 
     symmetric             every agent has the same alpha, swept from 0 to 1
     others_rising         one random agent (the "informed agent") is held at
@@ -8,14 +8,23 @@ The four tests, run on every network, with one chart per network per test.
                           informed agent's alpha is swept from 0 to 1
     informed_rising_half  every other agent is held at alpha = 0.5 while the
                           informed agent's alpha is swept from 0 to 1
+    social_share_alpha_1, social_share_alpha_0.5, social_share_alpha_0.1
+                          every agent has the given alpha; the number of social
+                          agents goes from 0 to N, one agent at a time
+
+Selfish agents minimise their own cost. Social agents minimise the cost their
+trip adds for everyone: their own cost plus the delay they cause others.
 
 Each point is the mean over --trials trials (default 200). Trial t uses seed
 3821 + t at every alpha, so the points along a line differ only in
 information. The informed agent is a random agent in each trial (the same
-agent at every alpha).
+agent at every alpha). In the social-share tests, each trial takes a random
+order of the agents and makes the first k social, so each point adds one
+social agent to the previous point's set.
 
 Charts show the mean cost per agent (all agents), the informed agent's cost
-(informed-agent tests only), each with a shaded 95% confidence band, and, for
+(informed-agent tests only) or the selfish and social agents' mean costs
+(social-share tests), each with a shaded 95% confidence band, and, for
 reference, the Wardrop equilibrium and social optimum cost per agent from
 src.benchmarks.frank_wolfe.
 
@@ -32,6 +41,7 @@ Outputs:
 
 import argparse
 import csv
+import json
 import math
 import os
 import random
@@ -49,9 +59,11 @@ NETWORKS = {
     "grid": "Grid",
     "sioux_falls": "Sioux Falls",
 }
-TESTS = ("symmetric", "others_rising", "informed_rising", "informed_rising_half")
 # Fixed alpha of the other agents in the tests that sweep the informed agent.
 OTHERS_ALPHA = {"informed_rising": 0.0, "informed_rising_half": 0.5}
+# Everyone's alpha in the tests that sweep the number of social agents.
+SOCIAL_ALPHA = {"social_share_alpha_1": 1.0, "social_share_alpha_0.5": 0.5, "social_share_alpha_0.1": 0.1}
+TESTS = ("symmetric", "others_rising", "informed_rising", "informed_rising_half", *SOCIAL_ALPHA)
 SCENARIOS = Path("scenarios")
 RESULTS = Path("results")
 BASE_SEED = 3821
@@ -66,52 +78,85 @@ def alpha_grid(step):
     return [round(i * step, 10) for i in range(n + 1)]
 
 
-def run_one(scenario, seed, test, alpha, cap=False):
-    """One simulation. Returns (completed, mean cost per agent, informed agent's cost)."""
+def run_one(scenario, seed, test, x, cap=False):
+    """One simulation at x (alpha, or the number of social agents in the social-share tests).
+
+    Returns (completed, mean cost per agent, informed agent's cost,
+             selfish agents' mean cost, social agents' mean cost); a group with no agents gives nan.
+    """
     simulation, config = load_scenario(scenario, {"cap_estimates": True} if cap else None, seed=seed)
     agents = simulation.agents
-    # Separate random stream, so picking the agent does not change the simulation's draws.
+    # Separate random streams, so picking agents does not change the simulation's draws.
     informed = random.Random(seed * 7919 + 1).choice(agents)
+    if test in SOCIAL_ALPHA:
+        order = list(agents)
+        random.Random(seed * 7919 + 2).shuffle(order)
+        for agent in order[:int(x)]:
+            agent.social = True
     for agent in agents:
         if test == "symmetric":
-            agent.alpha = alpha
+            agent.alpha = x
         elif test == "others_rising":
-            agent.alpha = 1.0 if agent is informed else alpha
-        else:  # informed_rising, informed_rising_half
-            agent.alpha = alpha if agent is informed else OTHERS_ALPHA[test]
+            agent.alpha = 1.0 if agent is informed else x
+        elif test in OTHERS_ALPHA:
+            agent.alpha = x if agent is informed else OTHERS_ALPHA[test]
+        else:
+            agent.alpha = SOCIAL_ALPHA[test]
     result = simulation.run_until_complete(config.get("max_timesteps", 100))
-    return result["completed"], result["average_cost"], informed.total_cost
+    selfish = [a.total_cost for a in agents if not a.social]
+    social = [a.total_cost for a in agents if a.social]
+    return (result["completed"], result["average_cost"], informed.total_cost,
+            mean(selfish) if selfish else math.nan, mean(social) if social else math.nan)
 
 
 def run_trial(task):
-    """All alphas for one trial (one seed)."""
-    scenario, test, seed, alphas, cap = task
-    return [(alpha, *run_one(scenario, seed, test, alpha, cap)) for alpha in alphas]
+    """Every x value for one trial (one seed)."""
+    scenario, test, seed, xs, cap = task
+    return [(x, *run_one(scenario, seed, test, x, cap)) for x in xs]
 
 
 def ci95(values):
     return 1.96 * stdev(values) / math.sqrt(len(values)) if len(values) > 1 else 0.0
 
 
+def mean_ci(values):
+    """(mean, 95% CI half-width) ignoring nan; (nan, nan) if nothing is left."""
+    values = [v for v in values if not math.isnan(v)]
+    return (mean(values), ci95(values)) if values else (math.nan, math.nan)
+
+
+def agent_count(network):
+    with (SCENARIOS / network / "agents.json").open(encoding="utf-8") as f:
+        spec = json.load(f)
+    return spec["generate"]["count"] if "generate" in spec else len(spec["agents"])
+
+
 def run_test(network, test, trials, alphas, benchmark, workers, cap=False):
-    tasks = [(str(SCENARIOS / network), test, BASE_SEED + t, alphas, cap) for t in range(trials)]
-    runs = {alpha: [] for alpha in alphas}
+    social_test = test in SOCIAL_ALPHA
+    n = agent_count(network)
+    # Social-share tests sweep the number of social agents (0 to N); the others sweep alpha.
+    xs = list(range(n + 1)) if social_test else alphas
+    tasks = [(str(SCENARIOS / network), test, BASE_SEED + t, xs, cap) for t in range(trials)]
+    runs = {x: [] for x in xs}
     with ProcessPoolExecutor(max_workers=workers) as pool:
         for trial in pool.map(run_trial, tasks, chunksize=max(1, trials // (4 * (workers or 1)))):
-            for alpha, completed, avg, informed in trial:
-                runs[alpha].append((completed, avg, informed))
+            for x, *outcome in trial:
+                runs[x].append(outcome)
 
     rows = []
-    for alpha in alphas:
-        completed, avg, informed = zip(*runs[alpha])
-        row = {
-            "alpha": alpha,
+    for x in xs:
+        completed, avg, informed, selfish, social = zip(*runs[x])
+        row = {"social_share": x / n, "alpha": SOCIAL_ALPHA[test]} if social_test else {"alpha": x}
+        row.update({
             "runs": len(avg),
             "incomplete_runs": len(avg) - sum(completed),
             "mean_cost_per_agent": mean(avg),
             "mean_cost_per_agent_ci95": ci95(avg),
-        }
-        if test != "symmetric":
+        })
+        if social_test:
+            row["selfish_agent_cost"], row["selfish_agent_cost_ci95"] = mean_ci(selfish)
+            row["social_agent_cost"], row["social_agent_cost_ci95"] = mean_ci(social)
+        elif test != "symmetric":
             row["informed_agent_cost"] = mean(informed)
             row["informed_agent_cost_ci95"] = ci95(informed)
         row["wardrop_per_agent"] = benchmark["wardrop_per_agent"]
@@ -150,12 +195,14 @@ def benchmarks(networks):
 
 # --------------------------------------------------------------------------- charts
 
-COLOURS = {"mean": "#1f4e79", "informed": "#c62828", "wardrop": "#666666", "optimum": "#000000"}
+COLOURS = {"mean": "#1f4e79", "informed": "#c62828", "selfish": "#c62828", "social": "#2e7d32",
+           "wardrop": "#666666", "optimum": "#000000"}
 X_LABELS = {
     "symmetric": r"$\alpha$ of every agent",
     "others_rising": r"$\alpha$ of the other agents",
     "informed_rising": r"$\alpha$ of the informed agent",
     "informed_rising_half": r"$\alpha$ of the informed agent",
+    **{test: f"Share of social agents (every agent at $\\alpha = {alpha:g}$)" for test, alpha in SOCIAL_ALPHA.items()},
 }
 INFORMED_LABELS = {
     "others_rising": r"Informed agent ($\alpha = 1$)",
@@ -199,8 +246,8 @@ def plot_network(network, results_dir):
         values = []
         for row in rows:
             values += [row["wardrop_per_agent"], row["optimum_per_agent"]]
-            for key in ("mean_cost_per_agent", "informed_agent_cost"):
-                if key in row:
+            for key in ("mean_cost_per_agent", "informed_agent_cost", "selfish_agent_cost", "social_agent_cost"):
+                if key in row and not math.isnan(row[key]):
                     values += [row[key] - row[f"{key}_ci95"], row[key] + row[f"{key}_ci95"]]
         low, high = min(values), max(values)
         pad = 0.06 * (high - low) if high > low else 0.05 * (abs(high) or 1)
@@ -212,14 +259,19 @@ def plot_network(network, results_dir):
         ci = [row[f"{key}_ci95"] for row in rows]
         ax.fill_between(xs, [y - c for y, c in zip(ys, ci)], [y + c for y, c in zip(ys, ci)],
                         color=colour, alpha=0.18, lw=0, zorder=2)
-        ax.plot(xs, ys, color=colour, lw=1.8, marker=marker, ms=3, label=label, zorder=3)
+        # Markers only when the points are far enough apart to be seen (e.g. alpha step 0.05).
+        ax.plot(xs, ys, color=colour, lw=1.8, marker=marker if len(xs) <= 30 else None, ms=3,
+                label=label, zorder=3)
 
     paths = []
     for test, rows in data.items():
-        xs = [row["alpha"] for row in rows]
+        xs = [row["social_share"] if test in SOCIAL_ALPHA else row["alpha"] for row in rows]
         fig, ax = plt.subplots(figsize=(6, 4.4))
         line(ax, xs, rows, "mean_cost_per_agent", COLOURS["mean"], "o", "Mean cost per agent")
-        if test != "symmetric":
+        if test in SOCIAL_ALPHA:
+            line(ax, xs, rows, "selfish_agent_cost", COLOURS["selfish"], "s", "Selfish agents")
+            line(ax, xs, rows, "social_agent_cost", COLOURS["social"], "^", "Social agents")
+        elif test != "symmetric":
             line(ax, xs, rows, "informed_agent_cost", COLOURS["informed"], "s", INFORMED_LABELS[test])
         ax.axhline(rows[0]["wardrop_per_agent"], color=COLOURS["wardrop"], ls="--", lw=1.2,
                    label="Wardrop equilibrium", zorder=2)
@@ -271,7 +323,8 @@ def main():
         for row in bench:
             network = row["network"]
             for test in tests:
-                print(f"{network} / {test}: {args.trials} trials x {len(alphas)} alphas", flush=True)
+                points = agent_count(network) + 1 if test in SOCIAL_ALPHA else len(alphas)
+                print(f"{network} / {test}: {args.trials} trials x {points} points", flush=True)
                 rows = run_test(network, test, args.trials, alphas, row, args.workers, args.cap)
                 write_csv(args.output / network / f"{test}.csv", rows)
                 incomplete = sum(r["incomplete_runs"] for r in rows)

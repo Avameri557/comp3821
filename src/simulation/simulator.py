@@ -112,11 +112,16 @@ class Simulation:
                 continue
             model = InformationModel(agent.alpha, rng=self.rng)
             observed = model.observe_routes(intentions, agent=agent)
-            perceived = {
-                # Others expected on the edge over the whole run, plus this agent.
-                (u, v): data["edge"].cost(flow=model.estimate_load(observed, (u, v), cap=self.estimate_cap) + 1)
-                for u, v, data in graph.edges(data=True)
-            }
+            perceived = {}
+            for u, v, data in graph.edges(data=True):
+                edge = data["edge"]
+                others = model.estimate_load(observed, (u, v), cap=self.estimate_cap)
+                # Own cost: the others expected on the edge over the whole run, plus this agent.
+                perceived[(u, v)] = edge.cost(flow=others + 1)
+                if agent.social:
+                    # Plus the delay this agent would add for each of those others:
+                    # a + b(f + 1) + b f = a + b(2f + 1), the marginal social cost.
+                    perceived[(u, v)] += edge.b * others
             plan = self.routing.choose_path(agent, graph, perceived, depth=self.depth_for(agent))
             intention["route"] = list(agent.route_history) + plan[1:]
 

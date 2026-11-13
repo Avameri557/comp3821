@@ -8,6 +8,9 @@ class Agent:
     origin: int
     destination: int
     alpha: float = 1.0
+    # Selfish agents minimise their own cost; social agents minimise the cost
+    # their trip adds for everyone (their own cost plus the delay they cause others).
+    social: bool = False
 
     current_node: int = field(init=False)
     route_history: list[int] = field(init=False)

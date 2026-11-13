@@ -82,7 +82,7 @@ def load_scenario(directory, overrides=None, seed=None):
     else:
         agents = [
             Agent(agent_id=item["id"], origin=item["origin"], destination=item["destination"],
-                  alpha=item.get("alpha", 1.0))
+                  alpha=item.get("alpha", 1.0), social=item.get("social", False))
             for item in agent_data["agents"]
         ]
 
