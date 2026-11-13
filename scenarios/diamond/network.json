@@ -1,14 +1,13 @@
-
 {
   "nodes": [1, 2, 3, 4, 5, 6],
   "edges": [
     {
       "from": 1, "to": 2,
-      "cost": {"type": "linear", "a": 1.0, "b": 0.023}
+      "cost": {"type": "linear", "a": 1, "b": 0.023}
     },
     {
       "from": 2, "to": 6,
-      "cost": {"type": "linear", "a": 1.0, "b": 0.003}
+      "cost": {"type": "linear", "a": 1, "b": 0.003}
     },
     {
       "from": 1, "to": 3,
@@ -16,7 +15,7 @@
     },
     {
       "from": 3, "to": 6,
-      "cost": {"type": "linear", "a": 1.0, "b": 0.003}
+      "cost": {"type": "linear", "a": 1, "b": 0.003}
     },
     {
       "from": 1, "to": 4,
@@ -24,7 +23,7 @@
     },
     {
       "from": 4, "to": 6,
-      "cost": {"type": "linear", "a": 1.0, "b": 0.003}
+      "cost": {"type": "linear", "a": 1, "b": 0.003}
     },
     {
       "from": 1, "to": 5,
@@ -32,7 +31,7 @@
     },
     {
       "from": 5, "to": 6,
-      "cost": {"type": "linear", "a": 1.0, "b": 0.003}
+      "cost": {"type": "linear", "a": 1, "b": 0.003}
     }
   ]
 }
