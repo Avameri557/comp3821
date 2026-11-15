@@ -1,6 +1,16 @@
 from dataclasses import dataclass, field
 import random
 
+# selfish       minimises its own cost
+# social        minimises the cost its trip adds for everyone (its own cost
+#               plus the delay it causes others)
+# controller    selfish, but backs its announcement with fake agents: some copy
+#               its route, so its road looks full and others avoid it; with
+#               rival controllers, the rest fill the roads that avoid the
+#               rivals, pushing traffic onto the rivals' roads
+# short_seller  selfish; recognises every fake agent it sees and publishes them
+ROLES = ("selfish", "social", "controller", "short_seller")
+
 
 @dataclass
 class Agent:
@@ -8,9 +18,7 @@ class Agent:
     origin: int
     destination: int
     alpha: float = 1.0
-    # Selfish agents minimise their own cost; social agents minimise the cost
-    # their trip adds for everyone (their own cost plus the delay they cause others).
-    social: bool = False
+    role: str = "selfish"
 
     current_node: int = field(init=False)
     route_history: list[int] = field(init=False)
@@ -20,6 +28,8 @@ class Agent:
     def __post_init__(self):
         if not 0 <= self.alpha <= 1:
             raise ValueError("alpha must be between 0 and 1")
+        if self.role not in ROLES:
+            raise ValueError(f"role must be one of {', '.join(ROLES)}")
         self.current_node = self.origin
         self.route_history = [self.origin]
         self.arrived = self.origin == self.destination
@@ -40,20 +50,27 @@ class InformationModel:
         self.alpha = alpha
         self.rng = rng if rng is not None else random.Random()
 
-    def observe_routes(self, intentions, agent=None):
-        """Count K[edge]: other agents seen with `edge` on their route.
+    def observe_routes(self, intentions, agent=None, ignore=()):
+        """The other announcements this agent sees.
 
-        Each other agent's whole route (the edges it has crossed plus its
-        current plan) is seen independently with probability alpha.
+        Each other announcement (a whole route: the edges crossed so far plus
+        the current plan) is seen independently with probability alpha.
+        Announcements whose id is in `ignore` (fake agents the observer knows
+        are fake) are skipped.
         """
+        return [intention for intention in intentions
+                if not (agent is not None and intention["id"] == agent.agent_id)
+                and intention["id"] not in ignore
+                and self.rng.random() < self.alpha]
+
+    @staticmethod
+    def count_edges(seen):
+        """K[edge]: announcements seen with `edge` on their route."""
         observed = {}
-        for intention in intentions:
-            if agent is not None and intention["agent"].agent_id == agent.agent_id:
-                continue
-            if self.rng.random() < self.alpha:
-                route = intention["route"]
-                for edge in zip(route, route[1:]):
-                    observed[edge] = observed.get(edge, 0) + 1
+        for intention in seen:
+            route = intention["route"]
+            for edge in zip(route, route[1:]):
+                observed[edge] = observed.get(edge, 0) + 1
         return observed
 
     def estimate_load(self, observed, edge, cap=None):

@@ -3,8 +3,9 @@ Load a scenario folder:
 
     network.json   nodes and edges, each with a linear cost {"a": ..., "b": ...}
     agents.json    {"generate": {"count", "sources", "destinations", "alpha"}}
-                   or {"agents": [{"id", "origin", "destination", "alpha"}, ...]}
-    config.json    max_timesteps, seed, revision_percentage, forward_only, cap_estimates
+                   or {"agents": [{"id", "origin", "destination", "alpha", "role"}, ...]}
+    config.json    max_timesteps, seed, revision_percentage, forward_only, cap_estimates,
+                   fake_agents (per controller, default N - 1), herd_share (default 0.5)
 """
 
 import json
@@ -82,7 +83,7 @@ def load_scenario(directory, overrides=None, seed=None):
     else:
         agents = [
             Agent(agent_id=item["id"], origin=item["origin"], destination=item["destination"],
-                  alpha=item.get("alpha", 1.0), social=item.get("social", False))
+                  alpha=item.get("alpha", 1.0), role=item.get("role", "selfish"))
             for item in agent_data["agents"]
         ]
 
@@ -92,5 +93,7 @@ def load_scenario(directory, overrides=None, seed=None):
         revision_percentage=config.get("revision_percentage", 100),
         forward_only=config.get("forward_only", True),
         cap_estimates=config.get("cap_estimates", False),
+        fake_agents=config.get("fake_agents"),
+        herd_share=config.get("herd_share", 0.5),
     )
     return simulation, config

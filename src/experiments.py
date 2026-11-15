@@ -8,23 +8,39 @@ The tests, run on every network, with one chart per network per test.
                           informed agent's alpha is swept from 0 to 1
     informed_rising_half  every other agent is held at alpha = 0.5 while the
                           informed agent's alpha is swept from 0 to 1
-    social_share_alpha_1, social_share_alpha_0.5, social_share_alpha_0.1
+    social_share_alpha_1, _0.75, _0.5, _0.25, _0.1
                           every agent has the given alpha; the number of social
                           agents goes from 0 to N, one agent at a time
+    controller            one controller; the other agents' alpha swept from 0 to 1
+    controller_short_seller
+                          one controller and one short-seller; alpha swept
+    rival_controllers     two rival controllers; alpha swept
+    rival_controllers_short_seller
+                          two rival controllers and one short-seller; alpha swept
+                          (controllers and short-sellers always have alpha = 1)
 
 Selfish agents minimise their own cost. Social agents minimise the cost their
 trip adds for everyone: their own cost plus the delay they cause others.
+Controllers are selfish but run N - 1 fake agents; short-sellers expose the
+fake agents they see (see src/simulation/simulator.py).
 
-Each point is the mean over --trials trials (default 200). Trial t uses seed
+alpha runs from 0 to 1 in steps of --step (default 0.01). Each point is the
+mean over --trials trials (default 500). Trial t uses seed
 3821 + t at every alpha, so the points along a line differ only in
 information. The informed agent is a random agent in each trial (the same
 agent at every alpha). In the social-share tests, each trial takes a random
 order of the agents and makes the first k social, so each point adds one
-social agent to the previous point's set.
+social agent to the previous point's set. In the controller tests the
+controllers and short-sellers are random agents (the same ones at every alpha),
+and always have alpha = 1. Each fake agent a short-seller exposes earns it a
+bounty of --bounty x the Wardrop cost per agent, paid by the fake's controller
+(a transfer, so the mean cost per agent is unchanged); the controllers' and
+short-sellers' costs are reported after the bounty.
 
 Charts show the mean cost per agent (all agents), the informed agent's cost
 (informed-agent tests only) or the selfish and social agents' mean costs
-(social-share tests), each with a shaded 95% confidence band, and, for
+(social-share tests) or the controllers', short-sellers' and selfish agents'
+mean costs (controller tests), each with a shaded 95% confidence band, and, for
 reference, the Wardrop equilibrium and social optimum cost per agent from
 src.benchmarks.frank_wolfe.
 
@@ -34,9 +50,14 @@ Usage:
     python -m src.experiments --plot-only                      # redraw charts from the CSVs
     python -m src.experiments --cap                            # agents cap estimates at N - 1
 
-Outputs:
-    results/benchmarks.csv
-    results/<network>/<test>.csv and <test>.png
+Outputs (all under results/):
+    results/benchmarks.csv                                     Wardrop and optimum per network
+    results/<network>/<test>.csv, .png                         core tests
+    results/capped/<network>/<test>.csv, .png                  core tests with --cap
+    results/experiments/social/<network>/<test>.csv, .png      social-share tests
+    results/experiments/social/capped/...                      social-share tests with --cap
+    results/experiments/controller/<network>/<test>.csv, .png  controller tests
+    results/experiments/controller/capped/...                  controller tests with --cap
 """
 
 import argparse
@@ -62,8 +83,18 @@ NETWORKS = {
 # Fixed alpha of the other agents in the tests that sweep the informed agent.
 OTHERS_ALPHA = {"informed_rising": 0.0, "informed_rising_half": 0.5}
 # Everyone's alpha in the tests that sweep the number of social agents.
-SOCIAL_ALPHA = {"social_share_alpha_1": 1.0, "social_share_alpha_0.5": 0.5, "social_share_alpha_0.1": 0.1}
-TESTS = ("symmetric", "others_rising", "informed_rising", "informed_rising_half", *SOCIAL_ALPHA)
+SOCIAL_ALPHA = {f"social_share_alpha_{alpha:g}": alpha for alpha in (1.0, 0.75, 0.5, 0.25, 0.1)}
+# (controllers, short-sellers) in the controller tests, which sweep everyone's alpha.
+CONTROLLER_TESTS = {
+    "controller": (1, 0),
+    "controller_short_seller": (1, 1),
+    "rival_controllers": (2, 0),
+    "rival_controllers_short_seller": (2, 1),
+}
+TESTS = ("symmetric", "others_rising", "informed_rising", "informed_rising_half", *SOCIAL_ALPHA,
+         *CONTROLLER_TESTS)
+# Groups whose mean cost is reported (by role).
+GROUPS = ("selfish", "social", "controller", "short_seller")
 SCENARIOS = Path("scenarios")
 RESULTS = Path("results")
 BASE_SEED = 3821
@@ -78,23 +109,33 @@ def alpha_grid(step):
     return [round(i * step, 10) for i in range(n + 1)]
 
 
-def run_one(scenario, seed, test, x, cap=False):
+def run_one(scenario, seed, test, x, cap=False, bounty=0.0):
     """One simulation at x (alpha, or the number of social agents in the social-share tests).
 
-    Returns (completed, mean cost per agent, informed agent's cost,
-             selfish agents' mean cost, social agents' mean cost); a group with no agents gives nan.
+    bounty: paid by a controller to the short-sellers for each of its fake agents they expose.
+    Returns (completed, mean cost per agent, informed agent's cost, the mean cost of each
+    group in GROUPS, share of fake agents exposed); a group with no agents gives nan.
     """
     simulation, config = load_scenario(scenario, {"cap_estimates": True} if cap else None, seed=seed)
     agents = simulation.agents
     # Separate random streams, so picking agents does not change the simulation's draws.
     informed = random.Random(seed * 7919 + 1).choice(agents)
+    order = list(agents)
+    random.Random(seed * 7919 + 2).shuffle(order)
     if test in SOCIAL_ALPHA:
-        order = list(agents)
-        random.Random(seed * 7919 + 2).shuffle(order)
         for agent in order[:int(x)]:
-            agent.social = True
+            agent.role = "social"
+    elif test in CONTROLLER_TESTS:
+        controllers, short_sellers = CONTROLLER_TESTS[test]
+        for agent in order[:controllers]:
+            agent.role = "controller"
+        for agent in order[controllers:controllers + short_sellers]:
+            agent.role = "short_seller"
     for agent in agents:
-        if test == "symmetric":
+        if test in CONTROLLER_TESTS:
+            # Controllers and short-sellers are fully informed; the others are swept.
+            agent.alpha = 1.0 if agent.role in ("controller", "short_seller") else x
+        elif test == "symmetric":
             agent.alpha = x
         elif test == "others_rising":
             agent.alpha = 1.0 if agent is informed else x
@@ -103,16 +144,25 @@ def run_one(scenario, seed, test, x, cap=False):
         else:
             agent.alpha = SOCIAL_ALPHA[test]
     result = simulation.run_until_complete(config.get("max_timesteps", 100))
-    selfish = [a.total_cost for a in agents if not a.social]
-    social = [a.total_cost for a in agents if a.social]
-    return (result["completed"], result["average_cost"], informed.total_cost,
-            mean(selfish) if selfish else math.nan, mean(social) if social else math.nan)
+    # Bounty: each exposed fake costs its controller `bounty`, shared by the short-sellers.
+    short_sellers = [a for a in agents if a.role == "short_seller"]
+    by_id = {a.agent_id: a for a in agents}
+    for _, controller_id, _ in simulation.exposed:
+        by_id[controller_id].total_cost += bounty
+        for short_seller in short_sellers:
+            short_seller.total_cost -= bounty / len(short_sellers)
+    exposed = len(simulation.exposed) / len(simulation.fakes) if simulation.fakes else math.nan
+    groups = []
+    for role in GROUPS:
+        costs = [a.total_cost for a in agents if a.role == role]
+        groups.append(mean(costs) if costs else math.nan)
+    return (result["completed"], result["average_cost"], informed.total_cost, *groups, exposed)
 
 
 def run_trial(task):
     """Every x value for one trial (one seed)."""
-    scenario, test, seed, xs, cap = task
-    return [(x, *run_one(scenario, seed, test, x, cap)) for x in xs]
+    scenario, test, seed, xs, cap, bounty = task
+    return [(x, *run_one(scenario, seed, test, x, cap, bounty)) for x in xs]
 
 
 def ci95(values):
@@ -131,12 +181,14 @@ def agent_count(network):
     return spec["generate"]["count"] if "generate" in spec else len(spec["agents"])
 
 
-def run_test(network, test, trials, alphas, benchmark, workers, cap=False):
+def run_test(network, test, trials, alphas, benchmark, workers, cap=False, bounty=0.0):
     social_test = test in SOCIAL_ALPHA
+    # Bounty per exposed fake agent, as a share of the Wardrop cost per agent.
+    per_fake = bounty * benchmark["wardrop_per_agent"]
     n = agent_count(network)
     # Social-share tests sweep the number of social agents (0 to N); the others sweep alpha.
     xs = list(range(n + 1)) if social_test else alphas
-    tasks = [(str(SCENARIOS / network), test, BASE_SEED + t, xs, cap) for t in range(trials)]
+    tasks = [(str(SCENARIOS / network), test, BASE_SEED + t, xs, cap, per_fake) for t in range(trials)]
     runs = {x: [] for x in xs}
     with ProcessPoolExecutor(max_workers=workers) as pool:
         for trial in pool.map(run_trial, tasks, chunksize=max(1, trials // (4 * (workers or 1)))):
@@ -145,7 +197,8 @@ def run_test(network, test, trials, alphas, benchmark, workers, cap=False):
 
     rows = []
     for x in xs:
-        completed, avg, informed, selfish, social = zip(*runs[x])
+        completed, avg, informed, *groups, exposed = zip(*runs[x])
+        groups = dict(zip(GROUPS, groups))
         row = {"social_share": x / n, "alpha": SOCIAL_ALPHA[test]} if social_test else {"alpha": x}
         row.update({
             "runs": len(avg),
@@ -154,8 +207,15 @@ def run_test(network, test, trials, alphas, benchmark, workers, cap=False):
             "mean_cost_per_agent_ci95": ci95(avg),
         })
         if social_test:
-            row["selfish_agent_cost"], row["selfish_agent_cost_ci95"] = mean_ci(selfish)
-            row["social_agent_cost"], row["social_agent_cost_ci95"] = mean_ci(social)
+            row["selfish_agent_cost"], row["selfish_agent_cost_ci95"] = mean_ci(groups["selfish"])
+            row["social_agent_cost"], row["social_agent_cost_ci95"] = mean_ci(groups["social"])
+        elif test in CONTROLLER_TESTS:
+            row["selfish_agent_cost"], row["selfish_agent_cost_ci95"] = mean_ci(groups["selfish"])
+            row["controller_cost"], row["controller_cost_ci95"] = mean_ci(groups["controller"])
+            if CONTROLLER_TESTS[test][1]:
+                row["short_seller_cost"], row["short_seller_cost_ci95"] = mean_ci(groups["short_seller"])
+                row["fakes_exposed"] = mean(exposed)
+                row["bounty_per_fake"] = per_fake
         elif test != "symmetric":
             row["informed_agent_cost"] = mean(informed)
             row["informed_agent_cost_ci95"] = ci95(informed)
@@ -196,13 +256,14 @@ def benchmarks(networks):
 # --------------------------------------------------------------------------- charts
 
 COLOURS = {"mean": "#1f4e79", "informed": "#c62828", "selfish": "#c62828", "social": "#2e7d32",
-           "wardrop": "#666666", "optimum": "#000000"}
+           "controller": "#6a1b9a", "short_seller": "#e08a00", "wardrop": "#666666", "optimum": "#000000"}
 X_LABELS = {
     "symmetric": r"$\alpha$ of every agent",
     "others_rising": r"$\alpha$ of the other agents",
     "informed_rising": r"$\alpha$ of the informed agent",
     "informed_rising_half": r"$\alpha$ of the informed agent",
     **{test: f"Share of social agents (every agent at $\\alpha = {alpha:g}$)" for test, alpha in SOCIAL_ALPHA.items()},
+    **{test: r"$\alpha$ of the other agents" for test in CONTROLLER_TESTS},
 }
 INFORMED_LABELS = {
     "others_rising": r"Informed agent ($\alpha = 1$)",
@@ -246,7 +307,8 @@ def plot_network(network, results_dir):
         values = []
         for row in rows:
             values += [row["wardrop_per_agent"], row["optimum_per_agent"]]
-            for key in ("mean_cost_per_agent", "informed_agent_cost", "selfish_agent_cost", "social_agent_cost"):
+            for key in ("mean_cost_per_agent", "informed_agent_cost", "selfish_agent_cost", "social_agent_cost",
+                        "controller_cost", "short_seller_cost"):
                 if key in row and not math.isnan(row[key]):
                     values += [row[key] - row[f"{key}_ci95"], row[key] + row[f"{key}_ci95"]]
         low, high = min(values), max(values)
@@ -271,6 +333,13 @@ def plot_network(network, results_dir):
         if test in SOCIAL_ALPHA:
             line(ax, xs, rows, "selfish_agent_cost", COLOURS["selfish"], "s", "Selfish agents")
             line(ax, xs, rows, "social_agent_cost", COLOURS["social"], "^", "Social agents")
+        elif test in CONTROLLER_TESTS:
+            controllers, short_sellers = CONTROLLER_TESTS[test]
+            line(ax, xs, rows, "selfish_agent_cost", COLOURS["selfish"], "s", "Selfish agents")
+            line(ax, xs, rows, "controller_cost", COLOURS["controller"], "D",
+                 "Controller" if controllers == 1 else "Controllers")
+            if short_sellers:
+                line(ax, xs, rows, "short_seller_cost", COLOURS["short_seller"], "v", "Short-seller")
         elif test != "symmetric":
             line(ax, xs, rows, "informed_agent_cost", COLOURS["informed"], "s", INFORMED_LABELS[test])
         ax.axhline(rows[0]["wardrop_per_agent"], color=COLOURS["wardrop"], ls="--", lw=1.2,
@@ -283,7 +352,7 @@ def plot_network(network, results_dir):
         ax.set_ylabel("Mean cost per agent")
         ax.set_title(NETWORKS[network])
         entries = len(ax.get_legend_handles_labels()[0])
-        ax.legend(loc="upper center", bbox_to_anchor=(0.5, -0.16), ncol=3 if entries == 3 else 2, frameon=False)
+        ax.legend(loc="upper center", bbox_to_anchor=(0.5, -0.16), ncol=3 if entries in (3, 6) else 2, frameon=False)
         fig.tight_layout()
         path = results_dir / network / f"{test}.png"
         fig.savefig(path, bbox_inches="tight")
@@ -299,20 +368,21 @@ def main():
     parser.add_argument("--network", action="append", choices=list(NETWORKS),
                         help="Network to run (repeatable). Default: all")
     parser.add_argument("--test", action="append", choices=TESTS, help="Test to run (repeatable). Default: all")
-    parser.add_argument("--step", type=float, default=0.05, help="Spacing of the alpha values")
-    parser.add_argument("--trials", type=int, default=200, help="Trials per point")
+    parser.add_argument("--step", type=float, default=0.01, help="Spacing of the alpha values")
+    parser.add_argument("--trials", type=int, default=500, help="Trials per point")
     parser.add_argument("--workers", type=int, default=os.cpu_count())
     parser.add_argument("--cap", action="store_true",
                         help="Agents cap every estimated load at the number of other agents (N - 1)")
-    parser.add_argument("--output", type=Path, default=None,
-                        help="Default: results/, or results_capped/ with --cap")
+    parser.add_argument("--output", type=Path, default=RESULTS,
+                        help="Root folder for all results (default: results/)")
     parser.add_argument("--plot-only", action="store_true", help="Redraw the charts from existing CSVs")
+    parser.add_argument("--bounty", type=float, default=0.02,
+                        help="Controller tests: bounty per exposed fake agent, as a share of the Wardrop "
+                             "cost per agent (default 0.02: exposing all N - 1 fakes is worth about one trip)")
     args = parser.parse_args()
 
     networks = args.network or list(NETWORKS)
     tests = args.test or list(TESTS)
-    if args.output is None:
-        args.output = Path("results_capped") if args.cap else RESULTS
 
     if not args.plot_only:
         bench = benchmarks(networks)
@@ -325,15 +395,30 @@ def main():
             for test in tests:
                 points = agent_count(network) + 1 if test in SOCIAL_ALPHA else len(alphas)
                 print(f"{network} / {test}: {args.trials} trials x {points} points", flush=True)
-                rows = run_test(network, test, args.trials, alphas, row, args.workers, args.cap)
-                write_csv(args.output / network / f"{test}.csv", rows)
+                rows = run_test(network, test, args.trials, alphas, row, args.workers, args.cap, args.bounty)
+                write_csv(test_dir(args.output, test, args.cap) / network / f"{test}.csv", rows)
                 incomplete = sum(r["incomplete_runs"] for r in rows)
                 if incomplete:
                     print(f"  warning: {incomplete} runs hit max_timesteps before every agent arrived")
 
-    for network in networks:
-        for path in plot_network(network, args.output):
-            print(f"Saved {path}")
+    # Redraw every chart in the folders these tests write to (with --plot-only, in every folder).
+    folders = {test_dir(args.output, test, cap) for test in tests
+               for cap in ((False, True) if args.plot_only else (args.cap,))}
+    for folder in sorted(folders):
+        for network in networks:
+            for path in plot_network(network, folder):
+                print(f"Saved {path}")
+
+
+def test_dir(root, test, cap=False):
+    """Folder for a test's results: core tests in root, the others in root/experiments/<group>."""
+    if test in SOCIAL_ALPHA:
+        folder = root / "experiments" / "social"
+    elif test in CONTROLLER_TESTS:
+        folder = root / "experiments" / "controller"
+    else:
+        folder = root
+    return folder / "capped" if cap else folder
 
 
 def read_bench(path):

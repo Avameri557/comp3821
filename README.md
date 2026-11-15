@@ -16,6 +16,12 @@ Agents re-plan every step, so only the first edge of any plan is committed. (The
 
 Agents only move forwards: they never step to a node closer (in hops) to their own origin and never revisit a node. Set `"forward_only": false` in `config.json` to turn this off. `revision_percentage` in `config.json` sets the share of agents that re-plan in step 2 (100 in every scenario).
 
+**Selfish and social agents.** Every agent is selfish by default: it chooses the route that minimises its own predicted cost, using a + b(f̂ + 1) for each edge. A **social** agent instead minimises the cost its trip adds for everyone, its own cost plus the delay it causes the f̂ others on each edge: a + b(f̂ + 1) + b·f̂ = a + b(2f̂ + 1), the marginal social cost. It will take a slower route if that lowers the total. With full information, a population of social agents reaches the social optimum on Pigou, Braess and diamond, and comes very close on grid. Set `"role": "social"` for an agent in an `agents` list, or use the social-share tests below.
+
+**Controllers and short-sellers.** A **controller** is a selfish agent that runs fake agents (N − 1 of them, `fake_agents` in `config.json`). A fake agent's announcement looks exactly like a real agent's, but it never travels and adds no congestion. *Shield* fakes copy the controller's route, so its road looks full and real agents avoid it, leaving it nearly empty for the controller. When there are rival controllers, half the fakes (`herd_share`) are *herding* fakes instead: each takes a real agent's origin and destination and announces the cheapest empty-road path that avoids the rivals' congestible edges, so the roads around the rivals look full and traffic is pushed onto them. A controller ignores its own fakes but can be fooled by a rival's.
+
+An activist **short-seller** is a selfish agent that recognises every fake agent it sees (it sees each announcement with probability α, like anyone else). It publishes the fakes at once and plans around them. Every other agent, each time it plans, reads the published list with probability α and then ignores the fakes on it. Set `"role": "controller"` or `"role": "short_seller"` for an agent in an `agents` list, or use the controller tests below. In the controller tests, controllers and short-sellers always have α = 1. Each fake a short-seller exposes earns it a **bounty**, paid by that fake's controller: `--bounty` × the Wardrop cost per agent (default 0.02, so exposing all N − 1 fakes is worth about one trip). It's a transfer, so the mean cost per agent doesn't change; the controllers' and short-sellers' costs are shown after it.
+
 **Capping estimates (optional).** By default an agent's estimate K/α can be any size, so with little information it can believe an edge holds more agents than exist. Set `"cap_estimates": true` in `config.json` (or run the experiments with `--cap`) and agents know how many agents there are: every estimated load is limited to N − 1, the number of other agents. On Pigou this removes every switch to the bottom road, because the top road can then never look worse than it can really be (0.02 × 50 = 1).
 
 ## Networks
@@ -42,23 +48,36 @@ Sioux Falls origins are nodes 1, 2, 3 and destinations 19, 20, 22, with agents s
 | `others_rising` | one random "informed agent" held at α = 1; every other agent's α 0 → 1 | mean cost per agent, informed agent's cost |
 | `informed_rising` | every other agent held at α = 0; the informed agent's α 0 → 1 | mean cost per agent, informed agent's cost |
 | `informed_rising_half` | every other agent held at α = 0.5; the informed agent's α 0 → 1 | mean cost per agent, informed agent's cost |
+| `social_share_alpha_1`, `_0.75`, `_0.5`, `_0.25`, `_0.1` | every agent at α = 1, 0.75, 0.5, 0.25 or 0.1; the number of social agents 0 → N, one at a time (the rest selfish) | mean cost per agent, selfish agents' cost, social agents' cost |
+| `controller` | one random controller; the other agents' α 0 → 1 | mean cost per agent, selfish agents' cost, controller's cost |
+| `controller_short_seller` | one controller and one short-seller; the other agents' α 0 → 1 | as above, plus the short-seller's cost |
+| `rival_controllers` | two rival controllers; the other agents' α 0 → 1 | mean cost per agent, selfish agents' cost, controllers' mean cost |
+| `rival_controllers_short_seller` | two rival controllers and one short-seller; the other agents' α 0 → 1 | as above, plus the short-seller's cost |
 
 Each line has a shaded 95% confidence band. Every chart also shows the Wardrop equilibrium and social optimum cost per agent. Each chart's y-axis is fitted to its own lines, bands and reference lines.
 
 ```
-python -m src.experiments                                    # all networks, all four tests
+python -m src.experiments                                    # all networks, all tests
 python -m src.experiments --network braess --test symmetric  # one chart
 python -m src.experiments --plot-only                        # redraw charts from the CSVs
 python -m src.experiments --cap                              # agents cap estimates at N - 1
 ```
 
-α runs from 0 to 1 in steps of 0.05 (`--step`). Each point averages 200 trials (`--trials`). Trial t uses seed 3821 + t at every α, so points along a line differ only in information.
+α runs from 0 to 1 in steps of 0.01 (`--step`). Each point averages 500 trials (`--trials`). In the social-share tests, each trial takes a random order of the agents and makes the first k social, so each point adds one social agent to the previous point's set. Trial t uses seed 3821 + t at every α, so points along a line differ only in information.
 
-Output in `results/` (or `results_capped/` with `--cap`):
+All output goes in `results/`:
 
-- `benchmarks.csv`: Wardrop and optimum cost per agent, and the price of anarchy, for every network
-- `<network>/<test>.png`: the chart
-- `<network>/<test>.csv`: mean cost per agent, informed agent's cost (with 95% confidence intervals) and the benchmarks at every α
+```
+results/benchmarks.csv                         Wardrop and optimum cost per agent, and the price of anarchy, for every network
+results/<network>/<test>.png, .csv             the core tests (symmetric, others_rising, informed_rising, informed_rising_half)
+results/capped/<network>/<test>.png, .csv      the same with --cap
+results/experiments/social/<network>/...       the social-share tests
+results/experiments/social/capped/...          the same with --cap
+results/experiments/controller/<network>/...   the controller tests
+results/experiments/controller/capped/...      the same with --cap
+```
+
+Each CSV holds the mean cost per agent and the cost of each group (informed agent; selfish and social agents; or selfish agents, controllers and short-sellers), with 95% confidence intervals, and the benchmarks at every point.
 
 ## Benchmarks
 
@@ -83,8 +102,7 @@ scenarios/<network>/      network.json, agents.json, config.json
 src/components/           agents, edges, routing
 src/simulation/           simulator and scenario loader
 src/benchmarks/           Wardrop equilibrium and social optimum
-src/experiments.py        the four tests and their charts
+src/experiments.py        the tests and their charts
 diagrams/                 TikZ sources, build script and PNGs
-results/                  test output
-results_capped/           test output with capped estimates
+results/                  all test output (core tests, capped/, experiments/)
 ```

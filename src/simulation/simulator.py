@@ -21,20 +21,44 @@ Every step:
      after it.
   3. All agents still travelling move one edge.
 Agents re-plan every step; only the first edge of a plan is ever committed.
+
+Controllers and short-sellers:
+  - Each controller runs fake agents (N - 1 by default). Their announcements
+    look exactly like real agents' but they never travel or add congestion.
+    Shield fakes copy the controller's route, so its road looks full and real
+    agents avoid it. If there are rival controllers, a share of the fakes
+    (herd_share) are herding fakes instead: each takes a real agent's origin
+    and destination and announces the cheapest empty-road path that avoids
+    every rival's congestible edges, so the roads around the rivals look full
+    and traffic is pushed onto them. A controller ignores its own fakes.
+  - A short-seller sees announcements like anyone else (each with probability
+    alpha) and recognises every fake one it sees. It publishes them at once,
+    ignores them when it plans, and plans selfishly. Every other agent, each
+    time it reviews its plan, reads the published list with probability
+    alpha and then ignores the fakes on it.
 """
 
 from collections import Counter
+from dataclasses import dataclass
 import random
 
 import networkx as nx
 
-from src.components.agent import InformationModel
+from src.components.agent import Agent, InformationModel
 from src.components.routing_strategies import SelfishRouting
+
+
+@dataclass
+class FakeAgent:
+    """An announcement with no real agent behind it, run by a controller."""
+    fake_id: tuple
+    owner: object        # the controller (an Agent)
+    traveller: object    # herding fakes: an Agent with the fake's origin and destination; shield fakes: None
 
 
 class Simulation:
     def __init__(self, network, agents, seed=None, revision_percentage=100, forward_only=True,
-                 cap_estimates=False):
+                 cap_estimates=False, fake_agents=None, herd_share=0.5):
         if isinstance(revision_percentage, bool) or not isinstance(revision_percentage, (int, float)) \
                 or not 0 <= revision_percentage <= 100:
             raise ValueError("revision_percentage must be a number between 0 and 100")
@@ -42,6 +66,11 @@ class Simulation:
             raise ValueError("forward_only must be true or false")
         if not isinstance(cap_estimates, bool):
             raise ValueError("cap_estimates must be true or false")
+        if fake_agents is not None and (isinstance(fake_agents, bool) or not isinstance(fake_agents, int)
+                                        or fake_agents < 0):
+            raise ValueError("fake_agents must be a nonnegative integer")
+        if isinstance(herd_share, bool) or not isinstance(herd_share, (int, float)) or not 0 <= herd_share <= 1:
+            raise ValueError("herd_share must be a number between 0 and 1")
         self.network = network
         self.agents = agents
         self.routing = SelfishRouting()
@@ -58,6 +87,13 @@ class Simulation:
         self.current_routes = {}
         self.rng = random.Random(seed)
         self._validate()
+        self.fake_agents = len(agents) - 1 if fake_agents is None else fake_agents
+        self.herd_share = herd_share
+        self.fakes = []
+        # Ids of the fake agents short-sellers have published.
+        self.exposed = set()
+        self._fakes_set_up = False
+        self._setup_seed = None if seed is None else seed * 7919 + 5
 
     def _validate(self):
         ids = [agent.agent_id for agent in self.agents]
@@ -79,11 +115,44 @@ class Simulation:
             )
         return self._depth_from[agent.origin]
 
+    def set_up_fakes(self):
+        """Give every controller its fake agents (done at the first step, so
+        roles can be assigned after the simulation is created)."""
+        self._fakes_set_up = True
+        controllers = [agent for agent in self.agents if agent.role == "controller"]
+        # A separate random stream, so fakes do not change the simulation's draws.
+        rng = random.Random(self._setup_seed)
+        herding = round(self.fake_agents * self.herd_share) if len(controllers) > 1 else 0
+        for controller in controllers:
+            for i in range(self.fake_agents):
+                traveller = None
+                if i < herding:
+                    pattern = rng.choice(self.agents)
+                    traveller = Agent(agent_id=-1, origin=pattern.origin, destination=pattern.destination)
+                self.fakes.append(FakeAgent(("fake", controller.agent_id, i), controller, traveller))
+
+    def herding_route(self, fake, routes):
+        """Cheapest empty-road path for a herding fake that avoids every congestible
+        edge on a rival controller's route (the controller's own route if there is none)."""
+        rival_edges = {edge for agent in self.agents
+                       if agent.role == "controller" and agent is not fake.owner
+                       for edge in zip(routes[agent.agent_id], routes[agent.agent_id][1:])
+                       if self.network.get_edge(*edge).b > 0}
+        costs = {(u, v): None if (u, v) in rival_edges else data["edge"].cost(flow=0)
+                 for u, v, data in self.network.graph.edges(data=True)}
+        try:
+            return self.routing.choose_path(fake.traveller, self.network.graph, costs,
+                                            depth=self.depth_for(fake.traveller))
+        except nx.NetworkXNoPath:
+            return list(routes[fake.owner.agent_id])
+
     def all_agents_arrived(self):
         return all(agent.arrived for agent in self.agents)
 
     def step(self):
         graph = self.network.graph
+        if not self._fakes_set_up:
+            self.set_up_fakes()
 
         # 1. Every agent announces its current route: the route it chose last
         #    step (which starts with the edges it has crossed). Before an agent's
@@ -95,8 +164,27 @@ class Simulation:
             if route is None:
                 route = (list(agent.route_history) if agent.arrived else
                          self.routing.choose_path(agent, graph, free_flow_costs, depth=self.depth_for(agent)))
-            intentions.append({"agent": agent, "route": list(route)})
+            intentions.append({"id": agent.agent_id, "agent": agent, "route": list(route)})
         travelling = [item for item in intentions if not item["agent"].arrived]
+
+        #    Controllers' fake agents announce too: shield fakes copy their
+        #    controller's route, herding fakes avoid the rivals' roads.
+        routes = {item["id"]: item["route"] for item in intentions}
+        shields, herding = {}, {}
+        for fake in self.fakes:
+            if fake.traveller:
+                key = (fake.owner.agent_id, fake.traveller.origin, fake.traveller.destination)
+                if key not in herding:
+                    herding[key] = self.herding_route(fake, routes)
+                route = list(herding[key])
+            else:
+                route = list(routes[fake.owner.agent_id])
+            intentions.append({"id": fake.fake_id, "agent": None, "route": route})
+            if not fake.traveller:
+                shields.setdefault(fake.owner.agent_id, []).append(intentions[-1])
+        own_fakes = {}
+        for fake in self.fakes:
+            own_fakes.setdefault(fake.owner.agent_id, set()).add(fake.fake_id)
 
         # 2. An exact share of travelling agents (rounded to the nearest agent)
         #    reviews its plan. Agents decide one at a time, in a new random order
@@ -111,19 +199,32 @@ class Simulation:
             if id(intention) not in reviewers:
                 continue
             model = InformationModel(agent.alpha, rng=self.rng)
-            observed = model.observe_routes(intentions, agent=agent)
+            # Fakes the agent knows about: a controller's own, and the published ones
+            # (a short-seller always knows them; anyone else reads the list with probability alpha).
+            ignore = set(own_fakes.get(agent.agent_id, ()))
+            if agent.role == "short_seller" or (self.exposed and self.rng.random() < agent.alpha):
+                ignore |= self.exposed
+            seen = model.observe_routes(intentions, agent=agent, ignore=ignore)
+            if agent.role == "short_seller":
+                # It recognises every fake it sees, publishes them and ignores them.
+                self.exposed |= {item["id"] for item in seen if item["agent"] is None}
+                seen = [item for item in seen if item["agent"] is not None]
+            observed = model.count_edges(seen)
             perceived = {}
             for u, v, data in graph.edges(data=True):
                 edge = data["edge"]
                 others = model.estimate_load(observed, (u, v), cap=self.estimate_cap)
                 # Own cost: the others expected on the edge over the whole run, plus this agent.
                 perceived[(u, v)] = edge.cost(flow=others + 1)
-                if agent.social:
+                if agent.role == "social":
                     # Plus the delay this agent would add for each of those others:
                     # a + b(f + 1) + b f = a + b(2f + 1), the marginal social cost.
                     perceived[(u, v)] += edge.b * others
             plan = self.routing.choose_path(agent, graph, perceived, depth=self.depth_for(agent))
             intention["route"] = list(agent.route_history) + plan[1:]
+            # A controller's shield fakes follow its new route.
+            for shield in shields.get(agent.agent_id, ()):
+                shield["route"] = list(intention["route"])
 
         # 3. Everyone still travelling moves one edge along its route; the route
         #    is kept as its announcement for the next step.
@@ -167,6 +268,7 @@ class Simulation:
                     "origin": agent.origin,
                     "destination": agent.destination,
                     "alpha": agent.alpha,
+                    "role": agent.role,
                     "arrived": agent.arrived,
                     "route": agent.route_history,
                     "cost": agent.total_cost,
