@@ -1,43 +1,37 @@
 """
-The tests, run on every network, with one chart per network per test.
+Monte Carlo information experiments on the five routing networks.
 
-    symmetric             every agent has the same alpha, swept from 0 to 1
-    others_rising         one random agent (the "informed agent") is held at
-                          alpha = 1 while every other agent's alpha is swept from 0 to 1
-    informed_rising       every other agent is held at alpha = 0 while the
-                          informed agent's alpha is swept from 0 to 1
-    informed_rising_half  every other agent is held at alpha = 0.5 while the
-                          informed agent's alpha is swept from 0 to 1
-    social_share_alpha_1, social_share_alpha_0.5, social_share_alpha_0.1
-                          every agent has the given alpha; the number of social
-                          agents goes from 0 to N, one agent at a time
+Core experiments (run by default):
+    symmetric             Every agent has the same alpha, swept from 0 to 1.
+    others_rising         One randomly selected agent remains at alpha = 1;
+                          every other agent's alpha is swept from 0 to 1.
+    informed_rising_half  Every other agent remains at alpha = 0.5;
+                          the focal agent's alpha is swept from 0 to 1.
 
-Selfish agents minimise their own cost. Social agents minimise the cost their
-trip adds for everyone: their own cost plus the delay they cause others.
+Optional experiment (run with --test informed_rising):
+    informed_rising       Every other agent remains at alpha = 0;
+                          the focal agent's alpha is swept from 0 to 1.
 
-Each point is the mean over --trials trials (default 200). Trial t uses seed
-3821 + t at every alpha, so the points along a line differ only in
-information. The informed agent is a random agent in each trial (the same
-agent at every alpha). In the social-share tests, each trial takes a random
-order of the agents and makes the first k social, so each point adds one
-social agent to the previous point's set.
+Each point averages --trials trials (default 200). Trial t uses seed 3821 + t
+at every alpha, so points along a curve differ only in information. Each trial
+picks a random focal agent, held fixed across alpha values within that trial.
 
-Charts show the mean cost per agent (all agents), the informed agent's cost
-(informed-agent tests only) or the selfish and social agents' mean costs
-(social-share tests), each with a shaded 95% confidence band, and, for
-reference, the Wardrop equilibrium and social optimum cost per agent from
-src.benchmarks.frank_wolfe.
+Charts show mean cost per agent and, for asymmetric experiments, the focal
+agent's mean cost, both with 95% confidence intervals. Wardrop equilibrium and
+social optimum values are plotted as reference lines.
 
 Usage:
-    python -m src.experiments                                  # everything
+    python -m src.experiments                                  # three core tests on all networks
     python -m src.experiments --network pigou --test symmetric
-    python -m src.experiments --plot-only                      # redraw charts from the CSVs
-    python -m src.experiments --cap                            # agents cap estimates at N - 1
+    python -m src.experiments --test informed_rising             # optional zero-information baseline
+    python -m src.experiments --plot-only                       # redraw existing charts
+    python -m src.experiments --cap                             # cap perceived loads at N - 1
 
 Outputs:
     results/benchmarks.csv
     results/<network>/<test>.csv and <test>.png
 """
+
 
 import argparse
 import csv
@@ -59,11 +53,10 @@ NETWORKS = {
     "grid": "Grid",
     "sioux_falls": "Sioux Falls",
 }
-# Fixed alpha of the other agents in the tests that sweep the informed agent.
+# Fixed alpha of the other agents in experiments that sweep the focal agent.
 OTHERS_ALPHA = {"informed_rising": 0.0, "informed_rising_half": 0.5}
-# Everyone's alpha in the tests that sweep the number of social agents.
-SOCIAL_ALPHA = {"social_share_alpha_1": 1.0, "social_share_alpha_0.5": 0.5, "social_share_alpha_0.1": 0.1}
-TESTS = ("symmetric", "others_rising", "informed_rising", "informed_rising_half", *SOCIAL_ALPHA)
+TESTS = ("symmetric", "others_rising", "informed_rising_half", "informed_rising")
+DEFAULT_TESTS = ("symmetric", "others_rising", "informed_rising_half")
 SCENARIOS = Path("scenarios")
 RESULTS = Path("results")
 BASE_SEED = 3821
@@ -78,35 +71,21 @@ def alpha_grid(step):
     return [round(i * step, 10) for i in range(n + 1)]
 
 
-def run_one(scenario, seed, test, x, cap=False):
-    """One simulation at x (alpha, or the number of social agents in the social-share tests).
-
-    Returns (completed, mean cost per agent, informed agent's cost,
-             selfish agents' mean cost, social agents' mean cost); a group with no agents gives nan.
-    """
+def run_one(scenario, seed, test, alpha, cap=False):
+    """One simulation for an information level; return completion, population cost, focal cost."""
     simulation, config = load_scenario(scenario, {"cap_estimates": True} if cap else None, seed=seed)
     agents = simulation.agents
-    # Separate random streams, so picking agents does not change the simulation's draws.
+    # Separate random streams so selecting the focal agent does not change simulation draws.
     informed = random.Random(seed * 7919 + 1).choice(agents)
-    if test in SOCIAL_ALPHA:
-        order = list(agents)
-        random.Random(seed * 7919 + 2).shuffle(order)
-        for agent in order[:int(x)]:
-            agent.social = True
     for agent in agents:
         if test == "symmetric":
-            agent.alpha = x
+            agent.alpha = alpha
         elif test == "others_rising":
-            agent.alpha = 1.0 if agent is informed else x
-        elif test in OTHERS_ALPHA:
-            agent.alpha = x if agent is informed else OTHERS_ALPHA[test]
+            agent.alpha = 1.0 if agent is informed else alpha
         else:
-            agent.alpha = SOCIAL_ALPHA[test]
+            agent.alpha = alpha if agent is informed else OTHERS_ALPHA[test]
     result = simulation.run_until_complete(config.get("max_timesteps", 100))
-    selfish = [a.total_cost for a in agents if not a.social]
-    social = [a.total_cost for a in agents if a.social]
-    return (result["completed"], result["average_cost"], informed.total_cost,
-            mean(selfish) if selfish else math.nan, mean(social) if social else math.nan)
+    return result["completed"], result["average_cost"], informed.total_cost
 
 
 def run_trial(task):
@@ -125,38 +104,26 @@ def mean_ci(values):
     return (mean(values), ci95(values)) if values else (math.nan, math.nan)
 
 
-def agent_count(network):
-    with (SCENARIOS / network / "agents.json").open(encoding="utf-8") as f:
-        spec = json.load(f)
-    return spec["generate"]["count"] if "generate" in spec else len(spec["agents"])
-
-
 def run_test(network, test, trials, alphas, benchmark, workers, cap=False):
-    social_test = test in SOCIAL_ALPHA
-    n = agent_count(network)
-    # Social-share tests sweep the number of social agents (0 to N); the others sweep alpha.
-    xs = list(range(n + 1)) if social_test else alphas
-    tasks = [(str(SCENARIOS / network), test, BASE_SEED + t, xs, cap) for t in range(trials)]
-    runs = {x: [] for x in xs}
+    tasks = [(str(SCENARIOS / network), test, BASE_SEED + t, alphas, cap)
+             for t in range(trials)]
+    runs = {alpha: [] for alpha in alphas}
     with ProcessPoolExecutor(max_workers=workers) as pool:
         for trial in pool.map(run_trial, tasks, chunksize=max(1, trials // (4 * (workers or 1)))):
-            for x, *outcome in trial:
-                runs[x].append(outcome)
+            for alpha, *outcome in trial:
+                runs[alpha].append(outcome)
 
     rows = []
-    for x in xs:
-        completed, avg, informed, selfish, social = zip(*runs[x])
-        row = {"social_share": x / n, "alpha": SOCIAL_ALPHA[test]} if social_test else {"alpha": x}
-        row.update({
+    for alpha in alphas:
+        completed, avg, informed = zip(*runs[alpha])
+        row = {
+            "alpha": alpha,
             "runs": len(avg),
             "incomplete_runs": len(avg) - sum(completed),
             "mean_cost_per_agent": mean(avg),
             "mean_cost_per_agent_ci95": ci95(avg),
-        })
-        if social_test:
-            row["selfish_agent_cost"], row["selfish_agent_cost_ci95"] = mean_ci(selfish)
-            row["social_agent_cost"], row["social_agent_cost_ci95"] = mean_ci(social)
-        elif test != "symmetric":
+        }
+        if test != "symmetric":
             row["informed_agent_cost"] = mean(informed)
             row["informed_agent_cost_ci95"] = ci95(informed)
         row["wardrop_per_agent"] = benchmark["wardrop_per_agent"]
@@ -195,14 +162,13 @@ def benchmarks(networks):
 
 # --------------------------------------------------------------------------- charts
 
-COLOURS = {"mean": "#1f4e79", "informed": "#c62828", "selfish": "#c62828", "social": "#2e7d32",
+COLOURS = {"mean": "#1f4e79", "informed": "#c62828",
            "wardrop": "#666666", "optimum": "#000000"}
 X_LABELS = {
     "symmetric": r"$\alpha$ of every agent",
     "others_rising": r"$\alpha$ of the other agents",
     "informed_rising": r"$\alpha$ of the informed agent",
     "informed_rising_half": r"$\alpha$ of the informed agent",
-    **{test: f"Share of social agents (every agent at $\\alpha = {alpha:g}$)" for test, alpha in SOCIAL_ALPHA.items()},
 }
 INFORMED_LABELS = {
     "others_rising": r"Informed agent ($\alpha = 1$)",
@@ -246,7 +212,7 @@ def plot_network(network, results_dir):
         values = []
         for row in rows:
             values += [row["wardrop_per_agent"], row["optimum_per_agent"]]
-            for key in ("mean_cost_per_agent", "informed_agent_cost", "selfish_agent_cost", "social_agent_cost"):
+            for key in ("mean_cost_per_agent", "informed_agent_cost"):
                 if key in row and not math.isnan(row[key]):
                     values += [row[key] - row[f"{key}_ci95"], row[key] + row[f"{key}_ci95"]]
         low, high = min(values), max(values)
@@ -265,13 +231,10 @@ def plot_network(network, results_dir):
 
     paths = []
     for test, rows in data.items():
-        xs = [row["social_share"] if test in SOCIAL_ALPHA else row["alpha"] for row in rows]
+        xs = [row["alpha"] for row in rows]
         fig, ax = plt.subplots(figsize=(6, 4.4))
         line(ax, xs, rows, "mean_cost_per_agent", COLOURS["mean"], "o", "Mean cost per agent")
-        if test in SOCIAL_ALPHA:
-            line(ax, xs, rows, "selfish_agent_cost", COLOURS["selfish"], "s", "Selfish agents")
-            line(ax, xs, rows, "social_agent_cost", COLOURS["social"], "^", "Social agents")
-        elif test != "symmetric":
+        if test != "symmetric":
             line(ax, xs, rows, "informed_agent_cost", COLOURS["informed"], "s", INFORMED_LABELS[test])
         ax.axhline(rows[0]["wardrop_per_agent"], color=COLOURS["wardrop"], ls="--", lw=1.2,
                    label="Wardrop equilibrium", zorder=2)
@@ -298,7 +261,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--network", action="append", choices=list(NETWORKS),
                         help="Network to run (repeatable). Default: all")
-    parser.add_argument("--test", action="append", choices=TESTS, help="Test to run (repeatable). Default: all")
+    parser.add_argument("--test", action="append", choices=TESTS, help="Test to run (repeatable). Default: the three core tests")
     parser.add_argument("--step", type=float, default=0.05, help="Spacing of the alpha values")
     parser.add_argument("--trials", type=int, default=200, help="Trials per point")
     parser.add_argument("--workers", type=int, default=os.cpu_count())
@@ -310,7 +273,7 @@ def main():
     args = parser.parse_args()
 
     networks = args.network or list(NETWORKS)
-    tests = args.test or list(TESTS)
+    tests = args.test or list(DEFAULT_TESTS)
     if args.output is None:
         args.output = Path("results_capped") if args.cap else RESULTS
 
@@ -323,7 +286,7 @@ def main():
         for row in bench:
             network = row["network"]
             for test in tests:
-                points = agent_count(network) + 1 if test in SOCIAL_ALPHA else len(alphas)
+                points = len(alphas)
                 print(f"{network} / {test}: {args.trials} trials x {points} points", flush=True)
                 rows = run_test(network, test, args.trials, alphas, row, args.workers, args.cap)
                 write_csv(args.output / network / f"{test}.csv", rows)
