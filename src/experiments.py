@@ -165,13 +165,13 @@ def benchmarks(networks):
 COLOURS = {"mean": "#1f4e79", "informed": "#c62828",
            "wardrop": "#666666", "optimum": "#000000"}
 X_LABELS = {
-    "symmetric": r"$\\alpha$ of every agent",
-    "others_rising": r"$\\alpha$ of the other agents",
-    "informed_rising": r"$\\alpha$ of the informed agent",
-    "informed_rising_half": r"$\\alpha$ of the informed agent",
+    "symmetric": r"$\alpha$ of every agent",
+    "others_rising": r"$\alpha$ of the other agents",
+    "informed_rising": r"$\alpha$ of the informed agent",
+    "informed_rising_half": r"$\alpha$ of the informed agent",
 }
 INFORMED_LABELS = {
-    "others_rising": r"Informed agent ($\\alpha = 1$)",
+    "others_rising": r"Informed agent ($\alpha = 1$)",
     "informed_rising": "Informed agent (others at $\\alpha = 0$)",
     "informed_rising_half": "Informed agent (others at $\\alpha = 0.5$)",
 }
