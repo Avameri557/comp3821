@@ -12,9 +12,9 @@ simulation, not exact predictions of it.
         = minimise  Σ_e x_e · c_e(x_e)          (marginal cost a + 2b·x)
     Price of anarchy = Wardrop total cost / optimum total cost
 
-Two solvers give the same answer:
-    --method paths   path-based gradient projection (default; fast and precise)
-    --method fw      Frank–Wolfe with an exact line search
+Solved with Frank–Wolfe: start from the all-or-nothing assignment, then
+repeatedly move part of the flow towards the current all-or-nothing point,
+with an exact line search, until the relative gap is below the tolerance.
 
 Demand: agents are spread evenly over the reachable source/destination pairs
 of agents.json. Paths follow the simulation's rule: with forward_only (the
@@ -125,60 +125,6 @@ class Solver:
                     x_paths[od][p] = x_paths[od].get(p, 0.0) + f * lam
         return self.report(x, x_paths, problem, gap, iterations)
 
-    def solve_paths(self, problem="ue", tolerance=1e-6, max_iterations=20000):
-        """Path-based gradient projection (Jayakrishnan et al., 1994).
-
-        Each iteration adds every OD's current cheapest path, then moves flow
-        from each dearer path onto it by a Newton step (cost difference /
-        curvature of the edges the two paths do not share).
-        """
-        x = np.zeros(len(self.edges))
-        path_flows = {od: {} for od in self.demand}
-        path_edges = {}
-
-        def edges_of(path):
-            if path not in path_edges:
-                path_edges[path] = np.array([self.index[(u, v)] for u, v in zip(path, path[1:])], dtype=int)
-            return path_edges[path]
-
-        _, start, _ = self.all_or_nothing(self.gradient(x, problem))
-        for od, flows in start.items():
-            for path, f in flows.items():
-                path_flows[od][path] = f
-                x[edges_of(path)] += f
-
-        h = self.curvature(problem)
-        gap, iterations = math.inf, 0
-        for iterations in range(1, max_iterations + 1):
-            g = self.gradient(x, problem)
-            _, cheapest_paths, cheapest = self.all_or_nothing(g)
-            current = float(x @ g)
-            gap = (current - cheapest) / current if current > 0 else 0.0
-            if gap < tolerance:
-                break
-            for od in self.demand:
-                best = next(iter(cheapest_paths[od]))
-                flows = path_flows[od]
-                flows.setdefault(best, 0.0)
-                for path in list(flows):
-                    if path == best or flows[path] <= 0:
-                        continue
-                    g = self.gradient(x, problem)
-                    pe, be = edges_of(path), edges_of(best)
-                    diff = float(g[pe].sum() - g[be].sum())
-                    if diff <= 0:
-                        continue
-                    bend = float(h[np.setxor1d(pe, be)].sum())
-                    shift = flows[path] if bend <= 0 else min(flows[path], diff / bend)
-                    flows[path] -= shift
-                    flows[best] += shift
-                    x[pe] -= shift
-                    x[be] += shift
-                for path in [p for p, f in flows.items() if f <= 1e-12]:
-                    del flows[path]
-            x = np.maximum(x, 0.0)
-        return self.report(x, path_flows, problem, gap, iterations)
-
     def report(self, x, path_flows, problem, gap, iterations):
         real_cost = self.cost(x)
         total = float(x @ real_cost)
@@ -200,13 +146,12 @@ class Solver:
         }
 
 
-def solve_scenario(scenario, method="paths", tolerance=1e-8, max_iterations=50000):
+def solve_scenario(scenario, tolerance=1e-8, max_iterations=50000):
     """Wardrop equilibrium, social optimum and price of anarchy for a scenario."""
     demand, simulation, config = scenario_demand(scenario)
     solver = Solver(simulation.network, demand, forward_only=config.get("forward_only", True))
-    solve = solver.solve_paths if method == "paths" else solver.solve_fw
-    ue = solve("ue", tolerance, max_iterations)
-    so = solve("so", tolerance, max_iterations)
+    ue = solver.solve_fw("ue", tolerance, max_iterations)
+    so = solver.solve_fw("so", tolerance, max_iterations)
     return {
         "agents": sum(demand.values()),
         "wardrop_equilibrium": ue,
@@ -218,11 +163,10 @@ def solve_scenario(scenario, method="paths", tolerance=1e-8, max_iterations=5000
 def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--scenario", required=True, type=Path)
-    parser.add_argument("--method", choices=["paths", "fw"], default="paths")
     parser.add_argument("--show-paths", action="store_true", help="Print the paths used per OD pair")
     args = parser.parse_args()
 
-    result = solve_scenario(args.scenario, args.method)
+    result = solve_scenario(args.scenario)
     ue, so = result["wardrop_equilibrium"], result["social_optimum"]
     print(f"{args.scenario.name}: {result['agents']:g} agents")
     print(f"  Wardrop equilibrium: total {ue['total_cost']:.4f}   per agent {ue['average_cost']:.4f}")
